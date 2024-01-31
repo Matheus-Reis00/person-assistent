@@ -1,0 +1,52 @@
+.container-settings {
+    &>.container {
+        &>.logo {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+
+            &>button {
+                color: #fff;
+                padding: 40px 20px;
+                border: none;
+                background-color: transparent;
+                display: flex;
+
+                &>svg {
+                    transform: rotate(180deg);
+                }
+            }
+
+            &>img {
+                width: 68%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+
+        &>.container-editar {
+            padding: 0px 50px;
+
+            &>.inputs {
+                display: flex;
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            &>.buttons {
+                width: 100%;
+                display: flex;
+                gap: 20px;
+                margin-top: 60px;
+
+                &>div {
+                    width: 30%;
+                    height: 5vh;
+                    .delete {
+                        background-color: red;
+                    }
+                }
+            }
+        }
+    }
+}

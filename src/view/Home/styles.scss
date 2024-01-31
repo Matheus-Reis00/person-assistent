@@ -1,0 +1,60 @@
+.container-home {
+    &>.container {
+        &>.setting {
+            width: 100%;
+            display: flex;
+            justify-content: end;
+            padding: 20px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+        }
+
+        &>.logo {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+
+            &>img {
+                width: 73%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+
+        &>.buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            padding: 0px 40px;
+
+            &>button {
+                border: 3px solid #fff;
+                padding: 25px 0px;
+                text-decoration: none;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 30px;
+                font-size: 20px;
+                box-shadow: 1px 3px 5px rgba(0, 0, 0, 25%);
+                color: #fff;
+                background-color: transparent;
+            }
+        }
+
+        &>.logout {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 60px;
+
+            &>div {
+                width: 40%;
+                height: 8vh;
+            }
+
+        }
+    }
+}
