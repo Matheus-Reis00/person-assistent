@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && firebase deploy",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "server": "json-server --watch db.json --port 3000"
@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^1.6.7",
     "dotenv": "^16.4.1",
+    "firebase": "^10.7.2",
     "json-server": "0.17.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
