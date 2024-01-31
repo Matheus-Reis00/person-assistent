@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { MdArrowForwardIos } from "react-icons/md"
 import imgFinance from "../../shared/images/person.png"
 import api from "../../shared/api"
@@ -7,7 +7,6 @@ import Input from "../../shared/components/Input"
 import Button from "../../shared/components/Button"
 import "./styles.scss"
 import { getCookie } from "../../shared/utils/cookie"
-import { Usuario } from "../../shared/utils/types"
 
 interface ISettings {
 }

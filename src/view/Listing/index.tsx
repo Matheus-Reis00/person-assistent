@@ -118,7 +118,7 @@ const Listing: FC<IListing> = () => {
                                 <MdOutlineKeyboardArrowDown className="arrow" onClick={() => dropMes ? setDropMes(false) : setDropMes(true)} />
                                 <div className={`${dropMes ? "drop" : ""}`}>
                                     {months?.map((month, index) => (
-                                        <input type="button" value={month.name} key={index} onClick={(e) => { setParamsRequest({ ...paramsRequest, mes: month.value }); setDropMes(false) }} />
+                                        <input type="button" value={month.name} key={index} onClick={() => { setParamsRequest({ ...paramsRequest, mes: month.value }); setDropMes(false) }} />
                                     ))}
                                 </div>
                             </div>
@@ -126,6 +126,7 @@ const Listing: FC<IListing> = () => {
                                 <input type="button" value={paramsRequest.ano} onClick={() => dropAno ? setDropAno(false) : setDropAno(true)} />
                                 <MdOutlineKeyboardArrowDown className="arrow" onClick={() => dropAno ? setDropAno(false) : setDropAno(true)} />
                                 <div className={`${dropAno ? "drop" : ""}`}>
+                                    {/* @ts-ignore */}
                                     {Array.from({ length: 5 }).map((item, index) => {
                                         const ano = new Date().getFullYear() + index
                                         return (

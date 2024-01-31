@@ -33,10 +33,10 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
         value: 0
     })
     const currentUrl = new URL(window.location.href)
-    const [paramsRequest, setParamsRequest] = useState<any>({
+    const paramsRequest: any = {
         mes: currentUrl.searchParams.get("mes") || new Date().getMonth(),
         ano: currentUrl.searchParams.get("ano") || new Date().getFullYear()
-    })
+    }
     const [apparenceDespesa, setApparenceDespesa] = useState<boolean>(false)
     const [apparenceMes, setApparenceMes] = useState<boolean>(false)
     const [valueDespesa, setValueDespesa] = useState<string>("Tipo de despesa...")
