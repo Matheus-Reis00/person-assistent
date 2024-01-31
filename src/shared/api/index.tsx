@@ -38,8 +38,6 @@ class Api {
             query = new URLSearchParams(objQueryes).toString()
         }
 
-        console.log(`${this.apiUrl}${id ? '/' + id : ''}/?${query}`)
-
         return axios.get(`${this.apiUrl}${id ? '/' + id : ''}/?${query}`)
     }
 
