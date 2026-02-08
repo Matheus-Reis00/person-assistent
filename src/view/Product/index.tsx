@@ -1,9 +1,8 @@
-import { FC, useEffect, useState } from "react";
-import { MdArrowDropDown, MdArrowForwardIos } from "react-icons/md"
+import { FC, useState } from "react";
+import { MdArrowForwardIos } from "react-icons/md"
 import { Despesa } from "../../shared/utils/types";
 import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router-dom';
-import { months, types } from "../../shared/utils/statics";
 import imgFinance from "../../shared/images/person.png"
 import api from "../../shared/api";
 import Input from "../../shared/components/Input";
@@ -20,6 +19,8 @@ interface IProduct {
 const Product: FC<IProduct> = ({ isEditType = null }) => {
 
     const { id: idDespesa } = useParams();
+
+    console.log(idDespesa, isEditType)
 
     const navigate = useNavigate()
     const [type, setType] = useState('')
@@ -91,7 +92,7 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                     parcela_atual: String(dataFieldsDespesa.parcela_atual)
                 }
             }
-        }).then(({ data }) => {
+        }).then(() => {
             navigate('/produtos')
         })
     }

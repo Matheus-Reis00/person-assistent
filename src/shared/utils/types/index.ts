@@ -7,7 +7,7 @@ export interface Usuario {
 export interface Despesa {
     id?: string,
     user_id?: string,
-    titulo: string,
+    title: string,
     tipo_pagamento: string,
     mes: string,
     ano: string,

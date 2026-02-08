@@ -35,7 +35,7 @@ const Listing: FC<IListing> = () => {
         const { data }: any = await api.get({
             property: `despesas`,
             query: { "mes-referencia": paramsRequest.ano + '-' + params.mes.toString().padStart(2, '0') }
-        }).catch((err) => {
+        }).catch(() => {
             alert("Erro ao buscar despesas")
             setDespesasAvulsas([])
             setDespesasFixas([])
@@ -159,7 +159,7 @@ const Listing: FC<IListing> = () => {
                                 {despesasAvulsas?.map((item, index) => (
                                     <div key={index}>
                                         <span>{item.total_parcelas}</span>
-                                        <span>{item.titulo}</span>
+                                        <span>{item.title}</span>
                                         <span>{item.valor_parcela}</span>
                                         <span onClick={() => handleSetTypeDespesa("avulsas", item.id)}><MdRemoveRedEye color="#000" size={18} /></span>
                                         <span onClick={() => navigate(`/produto/avulsa/${item.id}`)}><FaEdit color="#000" size={16} /></span>
@@ -169,7 +169,7 @@ const Listing: FC<IListing> = () => {
                                 {despesasFixas?.map((item, index) => (
                                     <div key={index}>
                                         <span>fixa</span>
-                                        <span>{item.titulo}</span>
+                                        <span>{item.title}</span>
                                         <span>{item.valor_parcela}</span>
                                         <span onClick={() => handleSetTypeDespesa("fixas", item.id)}><MdRemoveRedEye color="#000" size={18} /></span>
                                         <span onClick={() => navigate(`/produto/fixa/${item.id}`)}><FaEdit color="#000" size={16} /></span>
