@@ -12,3 +12,12 @@ export const months = [
     { value: '10', name: 'Novembro' },
     { value: '11', name: 'Dezembro' }
 ]
+
+export const types = [
+    { value: 'bradesco_matheus', name: 'Bradesco Matheus' },
+    { value: 'nubank_matheus', name: 'Nubank Matheus' },
+    { value: 'caixa_matheus', name: 'Caixa Matheus' },
+    { value: 'bradesco_ana', name: 'Bradesco Ana' },
+    { value: 'nubank_ana', name: 'Nubank Ana' },
+    { value: 'pix', name: 'Pix' }
+]

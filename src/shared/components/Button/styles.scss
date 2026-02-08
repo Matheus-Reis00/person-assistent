@@ -9,4 +9,10 @@
     box-shadow: 1px 3px 5px rgba(0, 0, 0, 25%);
     border: none;
     cursor: pointer;
+    padding: 8px 12px;
+
+    &:disabled{
+        background-color: #c8c8c8;
+        cursor: not-allowed;
+    }
 }

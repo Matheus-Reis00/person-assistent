@@ -26,16 +26,19 @@ const Access: FC<IAccess> = ({ urlCadastro, cadastro }) => {
     })
 
     const handleGetUser = () => {
-        api.get({
+        api.post({
             property: "users",
-            query: {
-                login: user.login,
+            body: {
+                user: {
+                    name: user.login,
+                    password: user.password
+                },
             }
         })
             .then(({ data }) => {
-                if (data.length > 0) {
-                    const userLogged = data[0]
-                    if (user.password === userLogged.password) {
+                if (data?.name) {
+                    const userLogged = data
+                    if (user?.password === userLogged?.password) {
                         setCookie("user", JSON.stringify(userLogged), 1)
                         navigate(`/home`)
                     } else {
@@ -44,13 +47,21 @@ const Access: FC<IAccess> = ({ urlCadastro, cadastro }) => {
                 } else {
                     setErrorMessage({ login: "Usuário incorreto", password: "" })
                 }
+            }).catch((err) => {
+                console.log(err.response.data.message)
+                if (!!err?.response?.data?.message) {
+                    if (err.response.data.message.toLowerCase().includes("senha"))
+                        setErrorMessage({ ...errorMessage, password: "Senha incorreta" })
+
+                    if (err.response.data.message.toLowerCase().includes("usuário"))
+                        setErrorMessage({ ...errorMessage, login: "Usuário incorreto" })
+                }
             })
     }
 
     const handlePostUser = () => {
-
-        api.get({
-            property: 'users'
+        api.post({
+            property: 'users-create'
         }).then(({ data }) => {
             const findUser = data.find((data: Usuario) => data.login === user.login)
 
@@ -84,6 +95,8 @@ const Access: FC<IAccess> = ({ urlCadastro, cadastro }) => {
         })
     }
 
+    console.log(errorMessage)
+
     return (
         <div className="container-access">
             <div className="container">
@@ -91,27 +104,27 @@ const Access: FC<IAccess> = ({ urlCadastro, cadastro }) => {
                     <img src={imgFinance} />
                 </div>
                 <div className="container-inputs">
-                    {urlCadastro === "/login" ? (
+                    {urlCadastro === "/register" ? (
                         <>
-                            <Input onChange={(e) => setUser({ ...user, login: e.target.value })} type="text" placeholder="Crie um login..." input="common" errorMessage={errorMessage.login || ''} />
-                            <Input onChange={(e) => setUser({ ...user, password: e.target.value })} type="text" placeholder="Crie uma senha..." input="common" errorMessage={errorMessage.password || ''} />
+                            <Input onChange={(e) => setUser({ ...user, login: e.target.value })} type="text" placeholder="Crie um login..." input="common" />
+                            <Input onChange={(e) => setUser({ ...user, password: e.target.value })} type="text" placeholder="Crie uma senha..." input="common" />
                         </>
                     ) :
-                        urlCadastro === "/register" && (
+                        urlCadastro === "/login" && (
                             <>
-                                <Input onChange={(e) => setUser({ ...user, login: e.target.value })} type="text" placeholder="Login..." input="common" />
-                                <Input onChange={(e) => setUser({ ...user, password: e.target.value })} type="text" placeholder="Senha..." input="common" />
+                                <Input onChange={(e) => setUser({ ...user, login: e.target.value })} type="text" placeholder="Login..." input="common" errorMessage={errorMessage?.login || ''} />
+                                <Input onChange={(e) => setUser({ ...user, password: e.target.value })} type="text" placeholder="Senha..." input="common" errorMessage={errorMessage?.password || ''} />
                             </>
                         )
                     }
                     <span onClick={() => navigate(urlCadastro)}>{cadastro}</span>
                     <div className="button-acess">
-                        {urlCadastro === "/login" ? (
+                        {urlCadastro === "/register" ? (
                             <div>
                                 <Button onClick={() => handlePostUser()} nameButton="Registrar" />
                             </div>
                         ) :
-                            urlCadastro === "/register" && (
+                            urlCadastro === "/login" && (
                                 <div>
                                     <Button onClick={() => handleGetUser()} nameButton="Acessar" />
                                 </div>

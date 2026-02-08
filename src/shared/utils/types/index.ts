@@ -4,29 +4,15 @@ export interface Usuario {
     passoword: string
 }
 
-export interface DespesaAvulsa {
-    id?: number
-    name: string
-    mes: number
-    ano: number
-    total_parcelas: number
-    value_parcela: number
-    total_value: number
+export interface Despesa {
+    id?: string,
+    user_id?: string,
+    titulo: string,
+    tipo_pagamento: string,
+    mes: string,
+    ano: string,
+    total_parcelas: number | 'fixa',
+    parcela_atual: number | 'fixa',
+    valor_parcela: number,
+    valor_total: number | string
 }
-
-export interface DespesasAvulsa {
-    id?: number
-    userId?: number
-    despesas: DespesaAvulsa[]
-
-}
-export interface DespesaFixa {
-    id?: number
-    userId?: number
-    despesas: {
-        id?: number
-        name: string
-        value: number
-    }[]
-}
-

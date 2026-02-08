@@ -1,10 +1,8 @@
-.container-input,
-.react-datepicker-wrapper,
-.react-datepicker__input-container {
+.container-select {
     width: 100%;
     position: relative;
 
-    &>input {
+    &>select {
         border: none;
         width: 100%;
         height: 60px;
@@ -15,14 +13,10 @@
         position: relative;
         text-align: left;
         background-color: #fff;
-        &.select {
-            caret-color: transparent;
-            z-index: 999;
-        }
+        color: #DEDEDE;
 
         &::placeholder {
             color: #DEDEDE;
-            font-size: 16px;
         }
 
         &:focus-visible {
@@ -31,16 +25,12 @@
         }
     }
 
-    &>.react-datepicker__tab-loop {
+    &>label{
         position: absolute;
-        z-index: 3;
-    }
-
-    &>.error {
-        color: red;
-        font-size: 15px;
-        position: absolute;
-        top: 65px;
-        left: 0px;
+        top: 20px;
+        left: 20px;
+        font-size: 16px;
+        color: #DEDEDE;
+        z-index: 999;
     }
 }

@@ -8,13 +8,13 @@ class Api {
     private config = (req: IRequest) => {
         switch (req.property) {
             case "users":
-                this.apiUrl = `${import.meta.env.VITE_BASE_URL}/users`
+                this.apiUrl = `${import.meta.env.VITE_BASE_URL}/users/login`
                 break;
-            case "despesas_fixas":
-                this.apiUrl = `${import.meta.env.VITE_BASE_URL}/despesas_fixas`
+            case "user-create":
+                this.apiUrl = `${import.meta.env.VITE_BASE_URL}/users/create`
                 break;
-            case "despesas_avulsas":
-                this.apiUrl = `${import.meta.env.VITE_BASE_URL}/despesas_avulsas`
+            case "despesas":
+                this.apiUrl = `${import.meta.env.VITE_BASE_URL}/despesas`
                 break;
         }
     }
@@ -25,13 +25,15 @@ class Api {
         let objQueryes: any = req.query || {};
         let id
 
+        console.log(this.apiUrl)
+
         if (objQueryes?.id) {
             id = objQueryes.id
             delete objQueryes.id
         }
 
         if (getCookie("user")) {
-            const userLogged = JSON.parse(getCookie("user"))
+            const userLogged = JSON.parse(decodeURIComponent(getCookie("user")))
             objQueryes.user_id = userLogged.id
         }
         if (req.query || objQueryes) {
@@ -45,10 +47,15 @@ class Api {
         this.config(req)
 
         if (getCookie("user")) {
-            let userLogged = JSON.parse(getCookie("user"))
+            const userLogged = JSON.parse(decodeURIComponent(getCookie("user")))
 
             if (userLogged.id)
-                req.body.user_id = userLogged.id
+                if (req.body.despesa) {
+                    req.body.despesa.user_id = userLogged.id
+
+                } else {
+                    req.body.user_id = userLogged.id
+                }
         }
 
         return axios.post(`${this.apiUrl}`, req.body)
