@@ -1,9 +1,10 @@
 import { FC, useEffect, useState } from "react";
 import { MdArrowForwardIos, MdOutlineKeyboardArrowDown, MdRemoveRedEye } from "react-icons/md"
 import { FaEdit } from "react-icons/fa"
-import { PiCheckCircleBold } from "react-icons/pi"
+import { FaTrashAlt } from "react-icons/fa";
+
 import { months } from "../../shared/utils/statics";
-import { handleSetParamsUrl } from "../../shared/utils/helpers";
+import { currencyFormatter, handleSetParamsUrl } from "../../shared/utils/helpers";
 import { useNavigate } from "react-router-dom";
 import imgFinance from "../../shared/images/person.png"
 import api from "../../shared/api";
@@ -11,6 +12,7 @@ import Button from "../../shared/components/Button";
 import Modal from "../../shared/components/Modal";
 import "./styles.scss"
 import { Despesa } from "../../shared/utils/types";
+import { optionsTypePayment } from "../../shared/statics/optionsTypePayment";
 
 interface IListing { }
 const Listing: FC<IListing> = () => {
@@ -27,7 +29,7 @@ const Listing: FC<IListing> = () => {
     const [dropAno, setDropAno] = useState<boolean>(false)
     const [plus, setPlus] = useState<boolean>(false)
     const [typeDespesa, setTypeDespesa] = useState<string>("")
-    const [indexDespesa, setIndexDespesa] = useState<number>(0)
+    const [despesaSelected, setDespesaSelected] = useState<Despesa | null>(null)
 
     const handleGetDespesas = async (params: any = {}) => {
         const paramsRequest = params
@@ -52,10 +54,31 @@ const Listing: FC<IListing> = () => {
                 avulsas.push(item)
         })
 
-        console.log(fixas)
-
         setDespesasAvulsas(avulsas)
         setDespesasFixas(fixas)
+    }
+
+    const handleCalcDespesasByCalc = () => {
+        let despesas: any[] = []
+
+        optionsTypePayment.forEach((item) => {
+            let totalValue = 0
+
+            const despesasByPayment = despesasAvulsas.filter((despesa) => despesa.tipo_pagamento === item.value)
+
+            if (despesasByPayment.length > 0) {
+                despesasByPayment.forEach((despesa) => {
+                    totalValue += Number(despesa.valor_parcela) || Number(despesa.valor_total)
+                })
+            }
+
+            despesas.push({
+                name: item.name,
+                totalValue: totalValue.toFixed(2)
+            })
+        })
+
+        return despesas
     }
 
     const handleCalcDespesas = (type: 'avulsa' | 'fixa' | 'total') => {
@@ -82,12 +105,12 @@ const Listing: FC<IListing> = () => {
             value += valueItem
         })
 
-        return value
+        return value.toFixed(2)
     }
 
     const handleSetTypeDespesa = (type: "fixas" | "avulsas", index: any) => {
         setTypeDespesa(type)
-        setIndexDespesa(index)
+        setDespesaSelected(index)
         setPlus(true)
     }
 
@@ -96,6 +119,8 @@ const Listing: FC<IListing> = () => {
         const url = handleSetParamsUrl(window.location.href, paramsRequest)
         window.history.pushState(null, '', url)
     }, [paramsRequest])
+
+    console.log(despesasAvulsas)
 
     return (
         <div className="container-listing">
@@ -134,16 +159,31 @@ const Listing: FC<IListing> = () => {
                     <div className="container-tables">
                         <table className="table-total">
                             <tr>
-                                <th>Despesas fixas</th>
-                                <th>Despesas avulsas</th>
-                                <th>Valor total</th>
+                                <th>Titulo</th>
+                                <th>Valor</th>
+                            </tr>
+                            {handleCalcDespesasByCalc().map((item, index) => (
+                                <>
+                                    <tr key={index}>
+                                        <th>{item.name}</th>
+                                        <th>{currencyFormatter(item.totalValue)}</th>
+                                    </tr>
+                                </>
+                            ))}
+                            <tr>
+                                <td>Fixa</td>
+                                <td>{currencyFormatter(Number(handleCalcDespesas('fixa')))}</td>
                             </tr>
                             <tr>
-                                <td>{handleCalcDespesas('fixa')}</td>
-                                <td>{handleCalcDespesas('avulsa')}</td>
-                                <td>{handleCalcDespesas('total')}</td>
+                                <td>Total</td>
+                                <td>{currencyFormatter(Number(handleCalcDespesas('total')))}</td>
                             </tr>
                         </table>
+                        <div className="new">
+                            <div>
+                                <Button nameButton="Nova despesa" onClick={() => navigate("/produto")}></Button>
+                            </div>
+                        </div>
                         <div className="table-products">
                             <div className="table title">
                                 <div>
@@ -158,32 +198,27 @@ const Listing: FC<IListing> = () => {
                             <div className="table products">
                                 {despesasAvulsas?.map((item, index) => (
                                     <div key={index}>
-                                        <span>{item.total_parcelas}</span>
+                                        <span>{Number(item?.total_parcelas) > 1 ? item?.parcela_atual + "/" : ''}{item?.total_parcelas}</span>
                                         <span>{item.title}</span>
-                                        <span>{item.valor_parcela}</span>
-                                        <span onClick={() => handleSetTypeDespesa("avulsas", item.id)}><MdRemoveRedEye color="#000" size={18} /></span>
+                                        <span>{currencyFormatter(item.valor_parcela)}</span>
+                                        <span onClick={() => handleSetTypeDespesa("avulsas", item)}><MdRemoveRedEye color="#000" size={18} /></span>
                                         <span onClick={() => navigate(`/produto/avulsa/${item.id}`)}><FaEdit color="#000" size={16} /></span>
-                                        <span><PiCheckCircleBold color="#000" size={18} /></span>
+                                        <span><FaTrashAlt color="#000" size={16} /></span>
                                     </div>
                                 ))}
                                 {despesasFixas?.map((item, index) => (
                                     <div key={index}>
                                         <span>fixa</span>
                                         <span>{item.title}</span>
-                                        <span>{item.valor_parcela}</span>
-                                        <span onClick={() => handleSetTypeDespesa("fixas", item.id)}><MdRemoveRedEye color="#000" size={18} /></span>
+                                        <span>{currencyFormatter(item.valor_parcela)}</span>
+                                        <span onClick={() => handleSetTypeDespesa("fixas", item)}><MdRemoveRedEye color="#000" size={18} /></span>
                                         <span onClick={() => navigate(`/produto/fixa/${item.id}`)}><FaEdit color="#000" size={16} /></span>
-                                        <span><PiCheckCircleBold color="#000" size={18} /></span>
+                                        <span><FaTrashAlt color="#000" size={16} /></span>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        <div className="new">
-                            <div>
-                                <Button nameButton="Nova despesa" onClick={() => navigate("/produto")}></Button>
-                            </div>
-                        </div>
-                        {plus ? <Modal type={typeDespesa} index={indexDespesa} onClick={() => setPlus(false)} /> : ""}
+                        {(plus && despesaSelected) ? <Modal despesa={despesaSelected} type={typeDespesa} onClick={() => setPlus(false)} /> : ""}
                     </div>
                 </div>
             </div>

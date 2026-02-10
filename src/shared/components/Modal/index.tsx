@@ -1,35 +1,20 @@
-import { FC, useState, useEffect } from "react";
+import { FC } from "react";
 import { AiOutlineClose } from "react-icons/ai"
 import { months } from "../../../shared/utils/statics";
-import api from "../../api";
 import "./styles.scss"
+import { Despesa } from "../../utils/types";
+import { optionsTypePayment } from "../../statics/optionsTypePayment";
+import { currencyFormatter } from "../../utils/helpers";
 
 interface IModal {
     onClick?: () => void;
     type?: string
-    index?: any
+    despesa: Despesa
 }
 
-const Modal: FC<IModal> = ({ onClick, type, index }) => {
+const Modal: FC<IModal> = ({ onClick, type, despesa }) => {
 
-    const [despesa, setDespesa] = useState<any[]>([])
-
-    const handleGetProducts = async () => {
-        await api.get({
-            property: `despesas_${type}`
-        })
-            .then(({ data }) => {
-                if (type == "avulsas") {
-                    setDespesa(data[0].despesas.filter((product: any) => product.id === index))
-                }
-                if (type == "fixas") {
-                    setDespesa(data[0].despesas.filter((product: any) => product.id === index))
-                }
-            })
-    }
-    useEffect(() => {
-        handleGetProducts()
-    }, [])
+    const typePayment = optionsTypePayment.find((item) => item.value === despesa?.tipo_pagamento)
 
     return (
         <div className="container-modal">
@@ -41,55 +26,67 @@ const Modal: FC<IModal> = ({ onClick, type, index }) => {
                 </div>
                 {type === "avulsas" ? (
                     <>
-                        {despesa.map((item, index) => (
-                            <div className="container-data" key={index}>
-                                <div className="data">
-                                    <div>
-                                        <label>Título</label>
-                                        <input type="text" placeholder={item.name} disabled />
-                                    </div>
-                                </div>
-                                <div className="data">
-                                    <div>
-                                        <label>Mês</label>
-                                        <input type="text" placeholder={months[item.mes].name} disabled />
-                                    </div>
-                                    <div>
-                                        <label>Ano</label>
-                                        <input type="text" placeholder={item.ano} disabled />
-                                    </div>
-                                </div>
-                                <div className="data">
-                                    <div>
-                                        <label>Valor</label>
-                                        <input type="text" placeholder={item.total_value} disabled />
-                                    </div>
-                                    <div>
-                                        <label>Parcelas</label>
-                                        <input type="text" placeholder={item.total_parcelas} disabled />
-                                    </div>
+                        <div className="container-data">
+                            <div className="data">
+                                <div>
+                                    <label>Título</label>
+                                    <input type="text" placeholder={despesa?.title} disabled />
                                 </div>
                             </div>
-                        ))}
+                            <div className="data">
+                                <div>
+                                    <label>Cartão</label>
+                                    <input type="text" placeholder={typePayment?.name} disabled />
+                                </div>
+                            </div>
+                            <div className="data">
+                                <div>
+                                    <label>Mês</label>
+                                    <input type="text" placeholder={months[Number(despesa?.mes)].name} disabled />
+                                </div>
+                                <div>
+                                    <label>Ano</label>
+                                    <input type="text" placeholder={despesa?.ano} disabled />
+                                </div>
+                            </div>
+                            <div className="data">
+                                <div>
+                                    <label>Valor</label>
+                                    <input type="text" placeholder={String(currencyFormatter(Number(despesa?.valor_total) || 0))} disabled />
+                                </div>
+
+
+                            </div>
+                            <div className="data">
+                                <div>
+                                    <label>Valor parcela</label>
+                                    <input type="text" placeholder={String(currencyFormatter(Number(despesa?.valor_parcela) || 0))} disabled />
+                                </div>
+                            </div>
+                            <div className="data">
+                                <div>
+                                    <label>Parcelas</label>
+                                    <input type="text" placeholder={String(despesa?.total_parcelas)} disabled />
+                                </div>
+                            </div>
+                        </div>
                     </>
                 ) : type === "fixas" && (
                     <>
-                        {despesa.map((item, index) => (
-                            <div className="container-data" key={index}>
-                                <div className="data">
-                                    <div>
-                                        <label>Título</label>
-                                        <input type="text" placeholder={item.name} disabled />
-                                    </div>
-                                </div>
-                                <div className="data">
-                                    <div>
-                                        <label>Valor</label>
-                                        <input type="text" placeholder={item.value} disabled />
-                                    </div>
+                        <div className="container-data">
+                            <div className="data">
+                                <div>
+                                    <label>Título</label>
+                                    <input type="text" placeholder={despesa?.title} disabled />
                                 </div>
                             </div>
-                        ))}
+                            <div className="data">
+                                <div>
+                                    <label>Valor</label>
+                                    <input type="text" placeholder={String(currencyFormatter(Number(despesa?.valor_total) || 0))} disabled />
+                                </div>
+                            </div>
+                        </div>
                     </>
                 )
 

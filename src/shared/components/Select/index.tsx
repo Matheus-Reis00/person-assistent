@@ -19,7 +19,7 @@ const Select: FC<Select> = ({
             {(placeholder && !value) && (
                 <label>{placeholder || ''}</label>
             )}
-            <select onChange={onChange} value={value}>
+            <select className="default-select" onChange={onChange} value={value} style={!!value ? { color: '#000' } : {}}>
                 <option value=""></option>
                 {options.map((option, key) => (
                     <option key={key} value={option?.value}>{option.name}</option>

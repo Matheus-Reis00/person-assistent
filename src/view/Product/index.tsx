@@ -9,7 +9,8 @@ import Input from "../../shared/components/Input";
 import Button from "../../shared/components/Button";
 import "./styles.scss"
 import Select from "../../shared/components/Select";
-import { currencyFormatter } from "../../shared/utils/helpers";
+import { currencyFormatterInput } from "../../shared/utils/helpers";
+import { optionsTypePayment } from "../../shared/statics/optionsTypePayment";
 
 
 
@@ -23,8 +24,7 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
     console.log(idDespesa, isEditType)
 
     const navigate = useNavigate()
-    const [type, setType] = useState('')
-
+    const [type, setType] = useState('avulsa')
 
     const [dataFieldsDespesa, setDataFieldsDespesa] = useState<Despesa>({
         id: new Date().getTime().toString(),
@@ -32,21 +32,13 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
         mes: new Date().getMonth().toString(),
         ano: new Date().getFullYear().toString(),
         parcela_atual: 1,
-        total_parcelas: 1,
+        total_parcelas: 0,
         tipo_pagamento: '',
         valor_parcela: 0,
         valor_total: "",
     })
 
     const optionsType = [{ name: "Fixa", value: "fixa" }, { name: "Avulsa", value: "avulsa" }]
-    const optionsTypePayment = [
-        { name: "Bradesco Matheus", value: "bradesco_matheus" },
-        { name: "Nubank Matheus", value: "nubank_matheus" },
-        { name: "Caixa Matheus", value: "caixa_matheus" },
-        { name: "Bradesco Ana", value: "bradesco_ana" },
-        { name: "Nubank Ana", value: "nubank_ana" },
-        { name: "Pix", value: "pix" }
-    ]
 
     const handleChangeType = (e: any) => {
         const value = e.target.value
@@ -77,19 +69,32 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
     }
 
     const handleSendValue = () => {
-        console.log(dataFieldsDespesa)
         const total_formated = handleFormatNumbersToSend(dataFieldsDespesa.valor_total)
         const valor_parcela = typeof dataFieldsDespesa.total_parcelas === 'number' ? (Number(total_formated) / dataFieldsDespesa.total_parcelas).toFixed(2) : dataFieldsDespesa.total_parcelas
+
+        const dia_atual = new Date().getDate()
+        const dia_vencimento = optionsTypePayment.find((option) => option.value === dataFieldsDespesa.tipo_pagamento)?.dia_vencimento
+
+        let formatedMonth = dia_vencimento && dia_atual > dia_vencimento ? new Date().getMonth() + 1 : new Date().getMonth()
+        let formatedYear = new Date().getFullYear()
+
+        if (formatedMonth === 12) {
+            formatedMonth = 0
+            formatedYear = new Date().getFullYear() + 1
+        }
 
         api.post({
             property: "despesas",
             body: {
                 despesa: {
                     ...dataFieldsDespesa,
+                    title: dataFieldsDespesa.title || "N/A",
                     valor_total: total_formated,
                     valor_parcela: valor_parcela,
                     total_parcelas: String(dataFieldsDespesa.total_parcelas),
-                    parcela_atual: String(dataFieldsDespesa.parcela_atual)
+                    parcela_atual: String(dataFieldsDespesa.parcela_atual),
+                    mes: String(formatedMonth),
+                    ano: String(formatedYear)
                 }
             }
         }).then(() => {
@@ -123,15 +128,15 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                             {dataFieldsDespesa.parcela_atual !== 'fixa' && (
                                 <>
                                     <div className="container-two">
-                                        <Select value={dataFieldsDespesa.total_parcelas} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, total_parcelas: parseInt(e.target.value) })} placeholder="Quantidade de parcelas" options={Array.from({ length: 12 }).map((_, i) => ({ name: (i + 1).toString(), value: (i + 1) }))} />
-                                        <Input input="common" value={dataFieldsDespesa.valor_total} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, valor_total: currencyFormatter(e.target.value) })} type="text" placeholder="Valor total" />
+                                        <Select value={dataFieldsDespesa.total_parcelas} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, total_parcelas: parseInt(e.target.value) })} placeholder="Qtde parcelas" options={Array.from({ length: 12 }).map((_, i) => ({ name: (i + 1).toString(), value: (i + 1) }))} />
+                                        <Input input="common" value={dataFieldsDespesa.valor_total} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, valor_total: currencyFormatterInput(e.target.value) })} type="text" placeholder="Valor total" />
                                     </div>
                                 </>
                             )}
 
                             {dataFieldsDespesa.parcela_atual === 'fixa' && (
                                 <>
-                                    <Input input="common" value={dataFieldsDespesa.valor_total} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, valor_total: currencyFormatter(e.target.value) })} type="text" placeholder="Valor total" />
+                                    <Input input="common" value={dataFieldsDespesa.valor_total} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, valor_total: currencyFormatterInput(e.target.value) })} type="text" placeholder="Valor total" />
                                 </>
                             )}
                         </>
@@ -140,7 +145,7 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                     {!!type && (
                         <div className="container-two" style={{ maxWidth: '240px', marginLeft: "auto", marginTop: "20px" }}>
                             <Button nameButton="Cancelar" colorOptional="red" onClick={() => navigate("/home")} />
-                            <Button nameButton="Cadastrar" onClick={handleSendValue} disabled={!dataFieldsDespesa.title || !dataFieldsDespesa.valor_total || !dataFieldsDespesa.tipo_pagamento} />
+                            <Button nameButton="Cadastrar" onClick={handleSendValue} disabled={!dataFieldsDespesa.valor_total || !dataFieldsDespesa.tipo_pagamento} />
                         </div>
                     )}
                 </div>

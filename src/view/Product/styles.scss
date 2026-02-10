@@ -1,4 +1,6 @@
 .container-product {
+    padding: 40px;
+
     &>.container {
         &>.logo {
             width: 100%;
@@ -24,12 +26,12 @@
             }
         }
 
-        &>.container-fields{
+        &>.container-fields {
             display: flex;
             flex-direction: column;
             gap: 16px;
 
-            &>.container-two{
+            &>.container-two {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 grid-column-gap: 16px;

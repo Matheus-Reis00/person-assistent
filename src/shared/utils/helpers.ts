@@ -14,25 +14,40 @@ export const handleSetParamsUrl = (uri: string, params: any): string => {
     return url.href
 }
 
-export function currencyFormatter(currency: string) {
-    let input = currency
+export function currencyFormatterInput(currency: string) {
+    try {
+        let input = String(currency)
 
-    // remove tudo que não for número
-    input = input.replace(/\D/g, "");
+        // remove tudo que não for número
+        input = input.replace(/\D/g, "");
 
-    // se não tiver nada, limpa
-    if (input === "") {
-      return ''
+        // se não tiver nada, limpa
+        if (input === "") {
+            return ''
+        }
+
+        // transforma em número (últimos 2 dígitos são os centavos)
+        const numero = parseFloat(input) / 100;
+
+        // formata no padrão BRL
+        const formatado = numero.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+        });
+
+        return formatado;
+    } catch (e) {
+        return currency
     }
+}
 
-    // transforma em número (últimos 2 dígitos são os centavos)
-    const numero = parseFloat(input) / 100;
-
-    // formata no padrão BRL
-    const formatado = numero.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
-
-    return formatado;
+export function currencyFormatter(currency: number) {
+    try {
+        return Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(currency);
+    } catch (e) {
+        return currency
+    }
 }
