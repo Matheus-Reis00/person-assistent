@@ -197,7 +197,7 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                     )}
 
                     {!!type && (
-                        <div className="container-two" style={{ maxWidth: '240px', marginLeft: "auto", marginTop: "20px" }}>
+                        <div className="container-two" style={{ marginTop: "20px" }}>
                             <Button nameButton="Cancelar" colorOptional="red" onClick={() => navigate("/home")} />
                             <Button nameButton={!!isEditType ? "Editar" : "Cadastrar"} onClick={handleSendValue} disabled={!dataFieldsDespesa.valor_total || !dataFieldsDespesa.tipo_pagamento} />
                         </div>

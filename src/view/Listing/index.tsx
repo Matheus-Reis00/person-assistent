@@ -171,8 +171,8 @@ const Listing: FC<IListing> = () => {
                                 </>
                             ))}
                             <tr>
-                                <td>Fixa</td>
-                                <td>{currencyFormatter(Number(handleCalcDespesas('fixa')))}</td>
+                                <th>Fixa</th>
+                                <th>{currencyFormatter(Number(handleCalcDespesas('fixa')))}</th>
                             </tr>
                             <tr>
                                 <td>Total</td>

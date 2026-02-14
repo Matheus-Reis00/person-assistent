@@ -22,7 +22,6 @@
             height: 50px;
 
             &>button {
-                // ... estilos mantidos
                 color: var(--text-primary);
                 padding: 10px;
                 border: 1px solid var(--glass-border);
@@ -75,18 +74,27 @@
     }
 }
 
-// Botões de ação no cadastro
+// Estilo para o container de botões de ação na tela de produto
 .container-product .container-fields .container-two:last-child {
-    margin-top: 10px;
+    margin-top: 24px;
+    /* Mais espaço para separar dos campos */
+    padding: 0 4px;
+    /* Pequeno ajuste para alinhar visualmente com o brilho dos inputs */
 
+    button {
+        height: 54px;
+        /* Mesma altura aproximada dos inputs */
+    }
+
+    /* Estilização especial para o botão de Cancelar (o primeiro) */
     button:first-child {
-        background: transparent;
+        background: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid var(--glass-border);
         color: var(--text-secondary);
         box-shadow: none;
 
         &:hover {
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.1) !important;
             color: var(--danger);
             border-color: var(--danger);
         }
