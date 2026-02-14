@@ -8,6 +8,7 @@ import Logo from "../../shared/components/Logo";
 import api from "../../shared/api";
 import Button from "../../shared/components/Button";
 import Modal from "../../shared/components/Modal";
+import ModalVirada from "../../shared/components/ModalVirada";
 import "./styles.scss"
 import { Despesa } from "../../shared/utils/types";
 import { optionsTypePayment } from "../../shared/statics/optionsTypePayment";
@@ -28,6 +29,8 @@ const Listing: FC<IListing> = () => {
     const [plus, setPlus] = useState<boolean>(false)
     const [typeDespesa, setTypeDespesa] = useState<string>("")
     const [despesaSelected, setDespesaSelected] = useState<Despesa | null>(null)
+    const [showViradaModal, setShowViradaModal] = useState<boolean>(false)
+    const [cardData, setCardData] = useState<{ name: string, dia: number } | null>(null)
 
     const handleGetDespesas = async (params: any = {}) => {
         const paramsRequest = params
@@ -112,6 +115,17 @@ const Listing: FC<IListing> = () => {
         setPlus(true)
     }
 
+    const handleShowVirada = (name: string) => {
+        const card = optionsTypePayment.find(opt => opt.name === name);
+        if (card && card.dia_vencimento) {
+            setCardData({
+                name: card.name,
+                dia: card.dia_vencimento + 1
+            });
+            setShowViradaModal(true);
+        }
+    }
+
     useEffect(() => {
         handleGetDespesas(paramsRequest)
         const url = handleSetParamsUrl(window.location.href, paramsRequest)
@@ -164,7 +178,7 @@ const Listing: FC<IListing> = () => {
                             </tr>
                             {handleCalcDespesasByCalc().map((item, index) => (
                                 <>
-                                    <tr key={index}>
+                                    <tr key={index} onClick={() => handleShowVirada(item.name)} style={{ cursor: 'pointer' }}>
                                         <th>{item.name}</th>
                                         <th>{currencyFormatter(item.totalValue)}</th>
                                     </tr>
@@ -213,6 +227,13 @@ const Listing: FC<IListing> = () => {
                             </div>
                         </div>
                         {(plus && despesaSelected) ? <Modal despesa={despesaSelected} type={typeDespesa} onClick={() => setPlus(false)} /> : ""}
+                        {showViradaModal && cardData && (
+                            <ModalVirada
+                                cardName={cardData.name}
+                                diaVirada={cardData.dia}
+                                onClick={() => setShowViradaModal(false)}
+                            />
+                        )}
                     </div>
                 </div>
             </div>
