@@ -154,7 +154,15 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
         <div className="container-product">
             <div className="container">
                 <div className="logo">
-                    <button onClick={() => navigate(-1)}><MdArrowForwardIos size={50} /></button>
+                    <button onClick={() => {
+                        if (isEditType) {
+                            navigate(`/produtos?mes-referencia=${ano}-${mes?.toString()?.padStart(2, '0')}`);
+                        } else {
+                            navigate('/home');
+                        }
+                    }}>
+                        <MdArrowForwardIos size={50} />
+                    </button>
                     <div className="logo-container">
                         <Logo />
                     </div>

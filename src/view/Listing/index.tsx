@@ -124,7 +124,7 @@ const Listing: FC<IListing> = () => {
         <div className="container-listing">
             <div className="container">
                 <div className="logo">
-                    <button onClick={() => navigate(`/home`)}><MdArrowForwardIos size={50} /></button>
+                    <button onClick={() => navigate('/home')}><MdArrowForwardIos size={50} /></button>
                     <div className="logo-container">
                         <Logo />
                     </div>

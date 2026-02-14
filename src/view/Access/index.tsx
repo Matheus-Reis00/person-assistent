@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { setCookie } from "../../shared/utils/cookie";
-import imgFinance from "../../shared/images/person.png"
+import Logo from "../../shared/components/Logo";
 import api from "../../shared/api";
 import Input from "../../shared/components/Input";
 import Button from "../../shared/components/Button";
@@ -99,7 +99,7 @@ const Access: FC<IAccess> = ({ urlCadastro }) => {
         <div className="container-access">
             <div className="container">
                 <div className="logo">
-                    <img src={imgFinance} />
+                    <Logo />
                 </div>
                 <div className="container-inputs">
                     {urlCadastro === "/register" ? (

@@ -1,16 +1,32 @@
 .container-access {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+
     &>.container {
+        width: 100%;
+        max-width: 400px;
+        background: var(--card-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 40px 24px;
+        box-shadow: var(--glass-shadow);
         display: flex;
         flex-direction: column;
-        gap: 30px;
+        gap: 32px;
 
         &>.logo {
             width: 100%;
             display: flex;
             justify-content: center;
+            height: 70px;
 
-            &>img {
-                width: 88%;
+            &>svg {
+                width: auto;
                 height: 100%;
             }
         }
@@ -18,36 +34,15 @@
         &>.container-inputs {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            position: relative;
-            padding: 0px 50px;
-
-            &>span {
-                position: absolute;
-                bottom: 95px;
-                right: 50px;
-                color: black;
-                text-decoration: none;
-                border-bottom: 1px solid;
-                cursor: pointer;
-                transition: .4s;
-
-                &:hover{
-                    opacity: .7;
-                }
-            }
+            gap: 16px;
 
             &>.button-acess {
                 width: 100%;
-                display: flex;
-                justify-content: center;
-                margin-top: 40px;
+                margin-top: 24px;
 
                 &>div {
-                    width: 50%;
-                    height: 7vh;
+                    width: 100%;
+                    height: 54px;
                 }
             }
         }
