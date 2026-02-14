@@ -1,41 +1,60 @@
 .container-select {
     width: 100%;
     position: relative;
+    margin-bottom: 8px;
 
     &>select {
-        border: none;
+        border: 1px solid var(--glass-border);
         width: 100%;
-        height: 60px;
-        border-radius: 10px;
-        box-shadow: 1px 3px 5px rgba(0, 0, 0, 25%);
+        height: 56px;
+        border-radius: 12px;
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(8px);
         padding: 0px 20px;
         font-size: 16px;
+        /* Aumentado para 16px para evitar zoom no iOS */
+        color: #ffffff;
         position: relative;
         text-align: left;
-        background-color: #fff;
-        color: #DEDEDE;
+        appearance: none;
+        cursor: pointer;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 
         option {
-            color: #000;
+            background-color: #1e293b;
+            color: #ffffff;
+            padding: 10px;
         }
 
-        &::placeholder {
-            color: #DEDEDE;
-            font-size: 16px;
-        }
-
-        &:focus-visible {
+        &:focus {
             outline: none;
-            background-image: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
     }
 
     &>label {
         position: absolute;
-        top: 20px;
+        top: 50%;
         left: 20px;
+        transform: translateY(-50%);
         font-size: 16px;
-        color: #DEDEDE;
-        z-index: 999;
+        /* Aumentado para 16px */
+        color: #94a3b8;
+        pointer-events: none;
+        transition: all 0.2s ease;
+        z-index: 5;
+    }
+
+    &::after {
+        content: '▼';
+        font-size: 10px;
+        color: var(--accent-color);
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        z-index: 6;
     }
 }

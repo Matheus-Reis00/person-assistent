@@ -3,7 +3,7 @@ import { MdArrowForwardIos } from "react-icons/md"
 import { Despesa } from "../../shared/utils/types";
 import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router-dom';
-import imgFinance from "../../shared/images/person.png"
+import Logo from "../../shared/components/Logo";
 import api from "../../shared/api";
 import Input from "../../shared/components/Input";
 import Button from "../../shared/components/Button";
@@ -31,8 +31,8 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
         mes: new Date().getMonth().toString(),
         ano: new Date().getFullYear().toString(),
         parcela_atual: 1,
-        total_parcelas: 0,
-        tipo_pagamento: '',
+        total_parcelas: 1, // Inicializa com 1 parcela
+        tipo_pagamento: optionsTypePayment[0].value, // Inicializa com o primeiro cartão
         valor_parcela: 0,
         valor_total: "",
     })
@@ -155,7 +155,9 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
             <div className="container">
                 <div className="logo">
                     <button onClick={() => navigate(-1)}><MdArrowForwardIos size={50} /></button>
-                    <img src={imgFinance} />
+                    <div className="logo-container">
+                        <Logo />
+                    </div>
                 </div>
 
                 <div className="container-fields">

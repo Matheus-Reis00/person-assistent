@@ -3,7 +3,7 @@ import { deleteCookie } from "../../shared/utils/cookie"
 // import { VscSettingsGear } from "react-icons/vsc"
 import { MdArrowForwardIos } from "react-icons/md"
 import { useNavigate } from "react-router-dom"
-import imgFinance from "../../shared/images/person.png"
+import Logo from "../../shared/components/Logo"
 import Button from "../../shared/components/Button"
 import "./styles.scss"
 
@@ -23,7 +23,7 @@ const Home: FC<IHome> = () => {
                     {/* <VscSettingsGear size={30} color="#000" /> */}
                 </button>
                 <div className="logo">
-                    <img src={imgFinance} />
+                    <Logo />
                 </div>
                 <div className="buttons">
                     <button onClick={() => navigate("/produto")}>Cadastrar nova despesa<MdArrowForwardIos size={35} /></button>

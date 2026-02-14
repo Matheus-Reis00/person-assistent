@@ -71,6 +71,29 @@ class Api {
 
         return axios.put(`${this.apiUrl}`, req.body)
     }
+
+    delete(req: IRequestGet) {
+        this.config(req)
+        let query: string = "";
+        let objQueryes: any = req.query || {};
+        let id
+
+        if (objQueryes?.id) {
+            id = objQueryes.id
+            delete objQueryes.id
+        }
+
+        if (getCookie("user")) {
+            const userLogged = JSON.parse(decodeURIComponent(getCookie("user")))
+            objQueryes.user_id = userLogged.id
+        }
+
+        if (req.query || objQueryes) {
+            query = new URLSearchParams(objQueryes).toString()
+        }
+
+        return axios.delete(`${this.apiUrl}${id ? '/' + id : ''}/?${query}`)
+    }
 }
 
 export default new Api()

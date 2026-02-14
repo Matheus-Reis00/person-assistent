@@ -1,12 +1,10 @@
 import { FC, useEffect, useState } from "react";
-import { MdArrowForwardIos, MdOutlineKeyboardArrowDown, MdRemoveRedEye } from "react-icons/md"
-import { FaEdit } from "react-icons/fa"
-import { FaTrashAlt } from "react-icons/fa";
+import { MdArrowForwardIos, MdOutlineKeyboardArrowDown } from "react-icons/md"
 
 import { months } from "../../shared/utils/statics";
 import { currencyFormatter, handleSetParamsUrl } from "../../shared/utils/helpers";
 import { useNavigate } from "react-router-dom";
-import imgFinance from "../../shared/images/person.png"
+import Logo from "../../shared/components/Logo";
 import api from "../../shared/api";
 import Button from "../../shared/components/Button";
 import Modal from "../../shared/components/Modal";
@@ -127,7 +125,9 @@ const Listing: FC<IListing> = () => {
             <div className="container">
                 <div className="logo">
                     <button onClick={() => navigate(`/home`)}><MdArrowForwardIos size={50} /></button>
-                    <img src={imgFinance} />
+                    <div className="logo-container">
+                        <Logo />
+                    </div>
                 </div>
                 <div className="separet">
                     <div className="date">
@@ -187,33 +187,27 @@ const Listing: FC<IListing> = () => {
                         <div className="table-products">
                             <div className="table title">
                                 <div>
-                                    <span>Parcelas</span>
+                                    <span>Parcela</span>
                                     <span>Titulo</span>
                                     <span>Valor</span>
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
+                                    <span>Cartão</span>
                                 </div>
                             </div>
                             <div className="table products">
                                 {despesasAvulsas?.map((item, index) => (
-                                    <div key={index}>
+                                    <div key={index} className="product-row" onClick={() => handleSetTypeDespesa("avulsas", item)}>
                                         <span>{Number(item?.total_parcelas) > 1 ? item?.parcela_atual + "/" : ''}{item?.total_parcelas}</span>
                                         <span>{item.title}</span>
                                         <span>{currencyFormatter(item.valor_parcela)}</span>
-                                        <span onClick={() => handleSetTypeDespesa("avulsas", item)}><MdRemoveRedEye color="#000" size={18} /></span>
-                                        <span onClick={() => navigate(`/produto/avulsa/${paramsRequest.mes}/${paramsRequest.ano}/${item.id}`)}><FaEdit color="#000" size={16} /></span>
-                                        <span><FaTrashAlt color="#000" size={16} /></span>
+                                        <span dangerouslySetInnerHTML={{ __html: optionsTypePayment.find(opt => opt.value === item.tipo_pagamento)?.name?.replace(" ", "<br/>") || 'N/A' }}></span>
                                     </div>
                                 ))}
                                 {despesasFixas?.map((item, index) => (
-                                    <div key={index}>
+                                    <div key={index} className="product-row" onClick={() => handleSetTypeDespesa("fixas", item)}>
                                         <span>fixa</span>
                                         <span>{item.title}</span>
                                         <span>{currencyFormatter(item.valor_parcela)}</span>
-                                        <span onClick={() => handleSetTypeDespesa("fixas", item)}><MdRemoveRedEye color="#000" size={18} /></span>
-                                        <span onClick={() => navigate(`/produto/fixa/${paramsRequest.mes}/${paramsRequest.ano}/${item.id}`)}><FaEdit color="#000" size={16} /></span>
-                                        <span><FaTrashAlt color="#000" size={16} /></span>
+                                        <span dangerouslySetInnerHTML={{ __html: optionsTypePayment.find(opt => opt.value === item.tipo_pagamento)?.name?.replace(" ", "<br/>") || 'N/A' }}></span>
                                     </div>
                                 ))}
                             </div>
