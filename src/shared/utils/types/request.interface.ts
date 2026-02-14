@@ -4,7 +4,7 @@ export interface IRequest {
 
 export interface IRequestGet extends IRequest {
     query?: {
-        id?: number;
+        id?: number | string;
         user_id?: number;
         user?: {
             name: string,

@@ -202,7 +202,7 @@ const Listing: FC<IListing> = () => {
                                         <span>{item.title}</span>
                                         <span>{currencyFormatter(item.valor_parcela)}</span>
                                         <span onClick={() => handleSetTypeDespesa("avulsas", item)}><MdRemoveRedEye color="#000" size={18} /></span>
-                                        <span onClick={() => navigate(`/produto/avulsa/${item.id}`)}><FaEdit color="#000" size={16} /></span>
+                                        <span onClick={() => navigate(`/produto/avulsa/${paramsRequest.mes}/${paramsRequest.ano}/${item.id}`)}><FaEdit color="#000" size={16} /></span>
                                         <span><FaTrashAlt color="#000" size={16} /></span>
                                     </div>
                                 ))}
@@ -212,7 +212,7 @@ const Listing: FC<IListing> = () => {
                                         <span>{item.title}</span>
                                         <span>{currencyFormatter(item.valor_parcela)}</span>
                                         <span onClick={() => handleSetTypeDespesa("fixas", item)}><MdRemoveRedEye color="#000" size={18} /></span>
-                                        <span onClick={() => navigate(`/produto/fixa/${item.id}`)}><FaEdit color="#000" size={16} /></span>
+                                        <span onClick={() => navigate(`/produto/fixa/${paramsRequest.mes}/${paramsRequest.ano}/${item.id}`)}><FaEdit color="#000" size={16} /></span>
                                         <span><FaTrashAlt color="#000" size={16} /></span>
                                     </div>
                                 ))}

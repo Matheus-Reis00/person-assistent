@@ -65,11 +65,11 @@ class Api {
         this.config(req)
 
         if (this.apiUrl.includes('/users') && getCookie("user")) {
-            const userLogged = JSON.parse(getCookie("user"))
-            req.body.id = userLogged.id
+            // const userLogged = JSON.parse(getCookie("user"))
+            // req.body.id = userLogged.id
         }
 
-        return axios.put(`${this.apiUrl}/${req.body.id}`, req.body)
+        return axios.put(`${this.apiUrl}`, req.body)
     }
 }
 
