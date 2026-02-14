@@ -15,12 +15,12 @@ const Home: FC<IHome> = () => {
         deleteCookie("user")
         navigate("/login")
     }
-    
+
     return (
         <div className="container-home">
             <div className="container">
                 <button className="setting" onClick={() => navigate(`/configuracoes`)}>
-                    <VscSettingsGear size={30} color="#000" />
+                    {/* <VscSettingsGear size={30} color="#000" /> */}
                 </button>
                 <div className="logo">
                     <img src={imgFinance} />
@@ -31,7 +31,7 @@ const Home: FC<IHome> = () => {
                 </div>
                 <div className="logout">
                     <div>
-                        <Button nameButton="Logout" onClick={handleLogout}></Button>
+                        <Button nameButton="Logout" colorOptional="red" onClick={handleLogout}></Button>
                     </div>
                 </div>
             </div>

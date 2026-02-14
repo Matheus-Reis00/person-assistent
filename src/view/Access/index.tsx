@@ -39,7 +39,7 @@ const Access: FC<IAccess> = ({ urlCadastro, cadastro }) => {
                 if (data?.name) {
                     const userLogged = data
                     if (user?.password === userLogged?.password) {
-                        setCookie("user", JSON.stringify(userLogged), 1)
+                        setCookie("user", JSON.stringify(userLogged), 365)
                         navigate(`/home`)
                     } else {
                         setErrorMessage({ ...errorMessage, password: "Senha incorreta" })
@@ -72,7 +72,7 @@ const Access: FC<IAccess> = ({ urlCadastro, cadastro }) => {
                     property: "users",
                     body: user
                 }).then(({ data }) => {
-                    setCookie("user", JSON.stringify(data), 1)
+                    setCookie("user", JSON.stringify(data), 365)
                     navigate("/home")
 
                     api.post({
@@ -95,8 +95,6 @@ const Access: FC<IAccess> = ({ urlCadastro, cadastro }) => {
         })
     }
 
-    console.log(errorMessage)
-
     return (
         <div className="container-access">
             <div className="container">
@@ -117,7 +115,7 @@ const Access: FC<IAccess> = ({ urlCadastro, cadastro }) => {
                             </>
                         )
                     }
-                    <span onClick={() => navigate(urlCadastro)}>{cadastro}</span>
+                    {/* <span onClick={() => navigate(urlCadastro)}>{cadastro}</span> */}
                     <div className="button-acess">
                         {urlCadastro === "/register" ? (
                             <div>

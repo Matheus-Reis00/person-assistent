@@ -11,6 +11,7 @@ import "./styles.scss"
 import Select from "../../shared/components/Select";
 import { currencyFormatter, currencyFormatterInput } from "../../shared/utils/helpers";
 import { optionsTypePayment } from "../../shared/statics/optionsTypePayment";
+import { months } from "../../shared/utils/statics";
 
 
 
@@ -90,17 +91,6 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
             const total_formated = handleFormatNumbersToSend(dataFieldsDespesa.valor_total)
             const valor_parcela = typeof dataFieldsDespesa.total_parcelas === 'number' ? (Number(total_formated) / dataFieldsDespesa.total_parcelas).toFixed(2) : dataFieldsDespesa.total_parcelas
 
-            const dia_atual = new Date().getDate()
-            const dia_vencimento = optionsTypePayment.find((option) => option.value === dataFieldsDespesa.tipo_pagamento)?.dia_vencimento
-
-            let formatedMonth = dia_vencimento && dia_atual > dia_vencimento ? new Date().getMonth() + 1 : new Date().getMonth()
-            let formatedYear = new Date().getFullYear()
-
-            if (formatedMonth === 12) {
-                formatedMonth = 0
-                formatedYear = new Date().getFullYear() + 1
-            }
-
             api.post({
                 property: "despesas",
                 body: {
@@ -111,8 +101,6 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                         valor_parcela: valor_parcela,
                         total_parcelas: String(dataFieldsDespesa.total_parcelas),
                         parcela_atual: String(dataFieldsDespesa.parcela_atual),
-                        mes: String(formatedMonth),
-                        ano: String(formatedYear)
                     }
                 }
             }).then(() => {
@@ -122,7 +110,6 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
     }
 
     useEffect(() => {
-        console.log(idDespesa, isEditType)
         if (isEditType && idDespesa) {
             api.get({
                 property: "despesas",
@@ -130,9 +117,7 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                     "mes-referencia": `${ano}-${mes?.toString()?.padStart(2, '0')}`
                 }
             }).then(({ data }) => {
-                console.log(data)
                 const despesa = data.find((despesa: Despesa) => despesa.id === idDespesa)
-                console.log(despesa)
                 if (despesa) {
                     setDataFieldsDespesa({
                         ...despesa,
@@ -143,6 +128,27 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
             })
         }
     }, [isEditType])
+
+    useEffect(() => {
+        if (dataFieldsDespesa.tipo_pagamento === 'fixa') return
+
+        const dia_atual = new Date().getDate()
+        const dia_vencimento = optionsTypePayment.find((option) => option.value === dataFieldsDespesa.tipo_pagamento)?.dia_vencimento
+
+        let formatedMonth: any = dia_vencimento && dia_atual > dia_vencimento ? new Date().getMonth() + 1 : new Date().getMonth()
+        let formatedYear: any = new Date().getFullYear()
+
+        if (formatedMonth === 12) {
+            formatedMonth = 0
+            formatedYear = new Date().getFullYear() + 1
+        }
+
+        setDataFieldsDespesa({
+            ...dataFieldsDespesa,
+            mes: String(formatedMonth),
+            ano: String(formatedYear)
+        })
+    }, [dataFieldsDespesa.tipo_pagamento])
 
     return (
         <div className="container-product">
@@ -165,6 +171,10 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
 
                             <div className="container-one">
                                 <Select value={dataFieldsDespesa.tipo_pagamento} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, tipo_pagamento: e.target.value })} placeholder="Tipo pagamento" options={optionsTypePayment} />
+                            </div>
+
+                            <div className="container-one">
+                                <Select value={String(dataFieldsDespesa.mes)} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, mes: e.target.value })} placeholder="Mês Referência" options={months.map((month, index) => ({ name: month.name, value: String(index) }))} />
                             </div>
 
                             {dataFieldsDespesa.parcela_atual !== 'fixa' && (
