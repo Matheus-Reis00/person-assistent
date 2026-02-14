@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { deleteCookie } from "../../shared/utils/cookie"
-import { VscSettingsGear } from "react-icons/vsc"
+// import { VscSettingsGear } from "react-icons/vsc"
 import { MdArrowForwardIos } from "react-icons/md"
 import { useNavigate } from "react-router-dom"
 import imgFinance from "../../shared/images/person.png"

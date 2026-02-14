@@ -12,7 +12,7 @@ interface IAccess {
     urlCadastro: string
     cadastro: string
 }
-const Access: FC<IAccess> = ({ urlCadastro, cadastro }) => {
+const Access: FC<IAccess> = ({ urlCadastro }) => {
 
     const navigate = useNavigate()
 
