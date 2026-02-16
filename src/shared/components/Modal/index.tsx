@@ -3,7 +3,7 @@ import { AiOutlineClose } from "react-icons/ai"
 import { months } from "../../../shared/utils/statics";
 import "./styles.scss"
 import { Despesa } from "../../utils/types";
-import { optionsTypePayment } from "../../statics/optionsTypePayment";
+import { getCardsFromStorage } from "../../utils/cardStorage";
 import { currencyFormatter } from "../../utils/helpers";
 import Button from "../Button";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +17,8 @@ interface IModal {
 
 const Modal: FC<IModal> = ({ onClick, type, despesa }) => {
     const navigate = useNavigate();
-    const typePayment = optionsTypePayment.find((item) => item.value === despesa?.tipo_pagamento)
+    const cards = getCardsFromStorage();
+    const typePayment = cards.find((item) => (item.value || item.slug) === despesa?.tipo_pagamento);
 
     useEffect(() => {
         // Bloqueia o scroll do body ao abrir o modal

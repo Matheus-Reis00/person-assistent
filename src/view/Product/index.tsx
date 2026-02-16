@@ -11,7 +11,6 @@ import Button from "../../shared/components/Button";
 import "./styles.scss"
 import Select from "../../shared/components/Select";
 import { currencyFormatter, currencyFormatterInput } from "../../shared/utils/helpers";
-import { optionsTypePayment } from "../../shared/statics/optionsTypePayment";
 import { months } from "../../shared/utils/statics";
 
 
@@ -26,6 +25,7 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
     const navigate = useNavigate()
     const [type, setType] = useState('')
     const [cards, setCards] = useState<any[]>([])
+    const [isLoading, setIsLoading] = useState(false)
 
     const [dataFieldsDespesa, setDataFieldsDespesa] = useState<Despesa>({
         id: new Date().getTime().toString(),
@@ -88,7 +88,6 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
     }
 
     const paymentOptions = [
-        ...optionsTypePayment,
         ...cards.map(card => ({ name: card.name, value: card.slug }))
     ]
 
@@ -113,8 +112,10 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
     }
 
     const handleSendValue = () => {
+        setIsLoading(true)
         const valor_parcela = handleFormatNumbersToSend(dataFieldsDespesa.valor_total)
-        const valor_total = Number(valor_parcela) * Number(dataFieldsDespesa.total_parcelas)
+        const numParcelas = dataFieldsDespesa.total_parcelas === 'fixa' ? 1 : Number(dataFieldsDespesa.total_parcelas)
+        const valor_total = (Number(valor_parcela) * numParcelas).toFixed(2)
         if (!!isEditType) {
 
             api.put({
@@ -134,7 +135,7 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                 }
             }).then(() => {
                 navigate('/produtos')
-            })
+            }).finally(() => setIsLoading(false))
         } else {
             api.post({
                 property: "despesas",
@@ -150,7 +151,7 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                 }
             }).then(() => {
                 navigate('/produtos')
-            })
+            }).finally(() => setIsLoading(false))
         }
     }
 
@@ -158,7 +159,7 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
         if (!dataFieldsDespesa.tipo_pagamento || dataFieldsDespesa.total_parcelas === 'fixa') return
 
         const dia_atual = new Date().getDate()
-        const paymentList = cards.length > 0 ? cards : optionsTypePayment;
+        const paymentList = cards;
         const card = paymentList.find((option) => (option.value || option.slug) === dataFieldsDespesa.tipo_pagamento)
         const dia_vencimento = card?.dia_vencimento || card?.data_vencimento
 
@@ -222,7 +223,7 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                                 <>
                                     <div className="container-two">
                                         <Select value={dataFieldsDespesa.total_parcelas} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, total_parcelas: parseInt(e.target.value) })} placeholder="Qtde parcelas" options={Array.from({ length: 12 }).map((_, i) => ({ name: (i + 1).toString(), value: (i + 1) }))} />
-                                        <Input input="common" value={dataFieldsDespesa.valor_total} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, valor_total: currencyFormatterInput(e.target.value) })} type="text" placeholder="Valor total" />
+                                        <Input input="common" value={dataFieldsDespesa.valor_total} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, valor_total: currencyFormatterInput(e.target.value) })} type="text" placeholder="Valor parcela" />
                                     </div>
                                 </>
                             )}
@@ -237,8 +238,8 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
 
                     {!!type && (
                         <div className="container-two" style={{ marginTop: "20px" }}>
-                            <Button nameButton="Cancelar" colorOptional="red" onClick={() => navigate("/home")} />
-                            <Button nameButton={!!isEditType ? "Editar" : "Cadastrar"} onClick={handleSendValue} disabled={!dataFieldsDespesa.valor_total || !dataFieldsDespesa.tipo_pagamento || !dataFieldsDespesa.mes || !type} />
+                            <Button nameButton="Cancelar" colorOptional="red" onClick={() => navigate("/home")} disabled={isLoading} />
+                            <Button nameButton={!!isEditType ? "Editar" : "Cadastrar"} onClick={handleSendValue} disabled={!dataFieldsDespesa.valor_total || !dataFieldsDespesa.tipo_pagamento || !dataFieldsDespesa.mes || !type} loading={isLoading} />
                         </div>
                     )}
                 </div>

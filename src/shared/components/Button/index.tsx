@@ -7,9 +7,19 @@ interface IButton {
     onClick?: () => void
     colorOptional?: string
     disabled?: boolean
+    loading?: boolean
 }
-const Button: FC<IButton> = ({ nameButton, onClick, colorOptional, disabled = false}) => {
-    return <button disabled={disabled} className="button-interactive" style={{ backgroundColor: `${colorOptional}` }} onClick={onClick}>{nameButton}</button>
+const Button: FC<IButton> = ({ nameButton, onClick, colorOptional, disabled = false, loading = false }) => {
+    return (
+        <button
+            disabled={disabled || loading}
+            className={`button-interactive ${loading ? 'loading' : ''}`}
+            style={{ backgroundColor: `${colorOptional}` }}
+            onClick={onClick}
+        >
+            {loading ? <div className="spinner"></div> : nameButton}
+        </button>
+    )
 }
 
 export default Button

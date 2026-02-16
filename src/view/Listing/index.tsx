@@ -12,7 +12,6 @@ import Modal from "../../shared/components/Modal";
 import ModalVirada from "../../shared/components/ModalVirada";
 import "./styles.scss"
 import { Despesa } from "../../shared/utils/types";
-import { optionsTypePayment } from "../../shared/statics/optionsTypePayment";
 
 interface IListing { }
 const Listing: FC<IListing> = () => {
@@ -63,7 +62,7 @@ const Listing: FC<IListing> = () => {
 
     const handleCalcDespesasByCalc = () => {
         let despesas: any[] = []
-        const paymentList = cards.length > 0 ? cards : optionsTypePayment;
+        const paymentList = cards;
 
         paymentList.forEach((item) => {
             let totalValue = 0
@@ -120,7 +119,7 @@ const Listing: FC<IListing> = () => {
     }
 
     const handleShowVirada = (name: string) => {
-        const paymentList = cards.length > 0 ? cards : optionsTypePayment;
+        const paymentList = cards;
         const card = paymentList.find(opt => opt.name === name);
         if (card && (card.dia_vencimento || card.data_vencimento)) {
             setCardData({
@@ -232,7 +231,7 @@ const Listing: FC<IListing> = () => {
                                         <span>{Number(item?.total_parcelas) > 1 ? item?.parcela_atual + "/" : ''}{item?.total_parcelas}</span>
                                         <span>{item.title}</span>
                                         <span>{currencyFormatter(item.valor_parcela)}</span>
-                                        <span dangerouslySetInnerHTML={{ __html: optionsTypePayment.find(opt => opt.value === item.tipo_pagamento)?.name?.replace(" ", "<br/>") || 'N/A' }}></span>
+                                        <span dangerouslySetInnerHTML={{ __html: cards.find(opt => (opt.value || opt.slug) === item.tipo_pagamento)?.name?.replace(" ", "<br/>") || 'N/A' }}></span>
                                     </div>
                                 ))}
                                 {despesasFixas?.map((item, index) => (
@@ -240,7 +239,7 @@ const Listing: FC<IListing> = () => {
                                         <span>fixa</span>
                                         <span>{item.title}</span>
                                         <span>{currencyFormatter(item.valor_parcela)}</span>
-                                        <span dangerouslySetInnerHTML={{ __html: optionsTypePayment.find(opt => opt.value === item.tipo_pagamento)?.name?.replace(" ", "<br/>") || 'N/A' }}></span>
+                                        <span dangerouslySetInnerHTML={{ __html: cards.find(opt => (opt.value || opt.slug) === item.tipo_pagamento)?.name?.replace(" ", "<br/>") || 'N/A' }}></span>
                                     </div>
                                 ))}
                             </div>

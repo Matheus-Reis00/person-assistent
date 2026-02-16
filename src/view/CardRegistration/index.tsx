@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react";
-import { MdArrowForwardIos, MdDelete } from "react-icons/md";
+import { MdArrowForwardIos } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import Logo from "../../shared/components/Logo";
 import Input from "../../shared/components/Input";
@@ -102,6 +102,7 @@ const CardRegistration: FC<ICardRegistration> = ({ isEditType }) => {
         if (!confirmDelete) return;
 
         try {
+            setIsLoading(true);
             await api.delete({
                 property: "cartoes",
                 query: { id }
@@ -112,6 +113,8 @@ const CardRegistration: FC<ICardRegistration> = ({ isEditType }) => {
         } catch (error) {
             console.error("Erro ao excluir cartão:", error);
             alert("Erro ao excluir o cartão.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -154,11 +157,13 @@ const CardRegistration: FC<ICardRegistration> = ({ isEditType }) => {
                             nameButton={isEditType ? "Excluir" : "Cancelar"}
                             colorOptional="red"
                             onClick={isEditType ? handleDeleteCard : () => navigate("/home")}
+                            disabled={isLoading}
                         />
                         <Button
                             nameButton={isEditType ? "Salvar" : "Cadastrar"}
                             onClick={handleRegisterCard}
-                            disabled={!cardName || isLoading}
+                            disabled={!cardName}
+                            loading={isLoading}
                         />
                     </div>
                 </div>

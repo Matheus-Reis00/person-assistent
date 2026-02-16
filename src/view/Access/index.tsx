@@ -26,8 +26,10 @@ const Access: FC<IAccess> = ({ urlCadastro }) => {
         password: ""
     })
     const [showPassword, setShowPassword] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleGetUser = () => {
+        setIsLoading(true)
         api.post({
             property: "users",
             body: {
@@ -64,10 +66,12 @@ const Access: FC<IAccess> = ({ urlCadastro }) => {
                     if (err.response.data.message.toLowerCase().includes("usuário"))
                         setErrorMessage({ ...errorMessage, login: "Usuário incorreto" })
                 }
+                setIsLoading(false)
             })
     }
 
     const handlePostUser = () => {
+        setIsLoading(true)
         api.post({
             property: 'users-create'
         }).then(({ data }) => {
@@ -101,6 +105,7 @@ const Access: FC<IAccess> = ({ urlCadastro }) => {
                     })
                 })
             }
+            setIsLoading(false)
         })
     }
 
@@ -137,12 +142,12 @@ const Access: FC<IAccess> = ({ urlCadastro }) => {
                     <div className="button-acess">
                         {urlCadastro === "/register" ? (
                             <div>
-                                <Button onClick={() => handlePostUser()} nameButton="Registrar" />
+                                <Button onClick={() => handlePostUser()} nameButton="Registrar" loading={isLoading} />
                             </div>
                         ) :
                             urlCadastro === "/login" && (
                                 <div>
-                                    <Button onClick={() => handleGetUser()} nameButton="Acessar" />
+                                    <Button onClick={() => handleGetUser()} nameButton="Acessar" loading={isLoading} />
                                 </div>
                             )
                         }
