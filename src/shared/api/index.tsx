@@ -16,6 +16,9 @@ class Api {
             case "despesas":
                 this.apiUrl = `${import.meta.env.VITE_BASE_URL}/despesas`
                 break;
+            case "cartoes":
+                this.apiUrl = `${import.meta.env.VITE_BASE_URL}/cartoes`
+                break;
         }
     }
 
@@ -24,8 +27,6 @@ class Api {
         let query: string = "";
         let objQueryes: any = req.query || {};
         let id
-
-        console.log(this.apiUrl)
 
         if (objQueryes?.id) {
             id = objQueryes.id
@@ -48,11 +49,9 @@ class Api {
 
         if (getCookie("user")) {
             const userLogged = JSON.parse(decodeURIComponent(getCookie("user")))
-
             if (userLogged.id)
                 if (req.body.despesa) {
                     req.body.despesa.user_id = userLogged.id
-
                 } else {
                     req.body.user_id = userLogged.id
                 }
@@ -64,9 +63,15 @@ class Api {
     put(req: IRequestPost) {
         this.config(req)
 
-        if (this.apiUrl.includes('/users') && getCookie("user")) {
-            // const userLogged = JSON.parse(getCookie("user"))
-            // req.body.id = userLogged.id
+        if (getCookie("user")) {
+            const userLogged = JSON.parse(decodeURIComponent(getCookie("user")))
+            if (userLogged.id) {
+                if (req.body.despesa) {
+                    req.body.despesa.user_id = userLogged.id
+                } else {
+                    req.body.user_id = userLogged.id
+                }
+            }
         }
 
         return axios.put(`${this.apiUrl}`, req.body)

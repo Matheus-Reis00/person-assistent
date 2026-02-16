@@ -1,14 +1,18 @@
 import { FC, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai"
+import { FaEdit } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import "./styles.scss"
 
 interface IModalVirada {
     onClick: () => void;
     cardName: string;
     diaVirada: number;
+    id?: string;
 }
 
-const ModalVirada: FC<IModalVirada> = ({ onClick, cardName, diaVirada }) => {
+const ModalVirada: FC<IModalVirada> = ({ onClick, cardName, diaVirada, id }) => {
+    const navigate = useNavigate();
 
     useEffect(() => {
         document.body.style.overflow = 'hidden';
@@ -21,6 +25,11 @@ const ModalVirada: FC<IModalVirada> = ({ onClick, cardName, diaVirada }) => {
         <div className="container-modal-virada">
             <div className="container-box">
                 <div className="container-close">
+                    {id && (
+                        <button onClick={() => navigate(`/cadastrar-cartao/${id}`)} className="edit-btn">
+                            <FaEdit />
+                        </button>
+                    )}
                     <button onClick={onClick}>
                         <AiOutlineClose />
                     </button>

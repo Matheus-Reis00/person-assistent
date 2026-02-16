@@ -5,6 +5,7 @@ import Home from "../../view/Home"
 import Product from "../../view/Product"
 import Listing from "../../view/Listing"
 import Settings from "../../view/Settings"
+import CardRegistration from "../../view/CardRegistration"
 
 interface IRouter { }
 const Router: FC<IRouter> = () => {
@@ -17,6 +18,8 @@ const Router: FC<IRouter> = () => {
             <Route path="/produto/fixa/:mes/:ano/:id" element={<Product isEditType={'fixa'} />} />
             <Route path="/produto/avulsa/:mes/:ano/:id" element={<Product isEditType={'avulsa'} />} />
             <Route path="/produtos" element={<Listing />} />
+            <Route path="/cadastrar-cartao" element={<CardRegistration />} />
+            <Route path="/cadastrar-cartao/:id" element={<CardRegistration isEditType={true} />} />
             <Route path="/configuracoes" element={<Settings />} />
         </Routes>
     )

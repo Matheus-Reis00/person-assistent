@@ -16,10 +16,15 @@ const Select: FC<Select> = ({
 
     return (
         <div className="container-select">
-            {(placeholder && !value) && (
-                <label>{placeholder || ''}</label>
-            )}
-            <select className="default-select" onChange={onChange} value={value}>
+            <select
+                className={`default-select ${!value ? 'placeholder-color' : ''}`}
+                onChange={onChange}
+                value={value}
+            >
+                {placeholder && (
+                    <option value="" disabled hidden>{placeholder}</option>
+                )}
+                <option value="">{placeholder || 'Selecione uma opção'}</option>
                 {options.map((option, key) => (
                     <option key={key} value={option?.value}>{option.name}</option>
                 ))}

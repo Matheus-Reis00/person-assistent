@@ -1,6 +1,7 @@
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { setCookie } from "../../shared/utils/cookie";
+import { saveCardsToStorage } from "../../shared/utils/cardStorage";
 import Logo from "../../shared/components/Logo";
 import api from "../../shared/api";
 import Input from "../../shared/components/Input";
@@ -24,6 +25,7 @@ const Access: FC<IAccess> = ({ urlCadastro }) => {
         login: "",
         password: ""
     })
+    const [showPassword, setShowPassword] = useState(false)
 
     const handleGetUser = () => {
         api.post({
@@ -40,7 +42,13 @@ const Access: FC<IAccess> = ({ urlCadastro }) => {
                     const userLogged = data
                     if (user?.password === userLogged?.password) {
                         setCookie("user", JSON.stringify(userLogged), 365)
-                        navigate(`/home`)
+
+                        // Busca e salva cartões no login
+                        api.get({ property: "cartoes" }).then(({ data }) => {
+                            if (data) saveCardsToStorage(data);
+                            navigate(`/home`)
+                        }).catch(() => navigate(`/home`));
+
                     } else {
                         setErrorMessage({ ...errorMessage, password: "Senha incorreta" })
                     }
@@ -73,12 +81,13 @@ const Access: FC<IAccess> = ({ urlCadastro }) => {
                     body: user
                 }).then(({ data }) => {
                     setCookie("user", JSON.stringify(data), 365)
+                    saveCardsToStorage([]) // Inicializa vazio para novo usuário
                     navigate("/home")
 
                     api.post({
                         property: "despesas_avulsas",
                         body: {
-                            user_id: data.id,
+                            user_id: data.user_id,
                             despesas: []
                         }
                     })
@@ -86,7 +95,7 @@ const Access: FC<IAccess> = ({ urlCadastro }) => {
                     api.post({
                         property: "despesas_fixas",
                         body: {
-                            user_id: data.id,
+                            user_id: data.user_id,
                             despesas: []
                         }
                     })
@@ -105,16 +114,25 @@ const Access: FC<IAccess> = ({ urlCadastro }) => {
                     {urlCadastro === "/register" ? (
                         <>
                             <Input onChange={(e) => setUser({ ...user, login: e.target.value })} type="text" placeholder="Crie um login..." input="common" />
-                            <Input onChange={(e) => setUser({ ...user, password: e.target.value })} type="text" placeholder="Crie uma senha..." input="common" />
+                            <Input onChange={(e) => setUser({ ...user, password: e.target.value })} type={showPassword ? "text" : "password"} placeholder="Crie uma senha..." input="common" />
                         </>
                     ) :
                         urlCadastro === "/login" && (
                             <>
                                 <Input onChange={(e) => setUser({ ...user, login: e.target.value })} type="text" placeholder="Login..." input="common" errorMessage={errorMessage?.login || ''} />
-                                <Input onChange={(e) => setUser({ ...user, password: e.target.value })} type="text" placeholder="Senha..." input="common" errorMessage={errorMessage?.password || ''} />
+                                <Input onChange={(e) => setUser({ ...user, password: e.target.value })} type={showPassword ? "text" : "password"} placeholder="Senha..." input="common" errorMessage={errorMessage?.password || ''} />
                             </>
                         )
                     }
+                    <div className="show-password">
+                        <input
+                            type="checkbox"
+                            id="show-password"
+                            checked={showPassword}
+                            onChange={() => setShowPassword(!showPassword)}
+                        />
+                        <label htmlFor="show-password">Ver senha</label>
+                    </div>
                     {/* <span onClick={() => navigate(urlCadastro)}>{cadastro}</span> */}
                     <div className="button-acess">
                         {urlCadastro === "/register" ? (

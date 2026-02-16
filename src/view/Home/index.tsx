@@ -1,5 +1,6 @@
 import { FC } from "react"
 import { deleteCookie } from "../../shared/utils/cookie"
+import { clearCardsStorage } from "../../shared/utils/cardStorage"
 // import { VscSettingsGear } from "react-icons/vsc"
 import { MdArrowForwardIos } from "react-icons/md"
 import { useNavigate } from "react-router-dom"
@@ -13,6 +14,7 @@ const Home: FC<IHome> = () => {
 
     const handleLogout = () => {
         deleteCookie("user")
+        clearCardsStorage()
         navigate("/login")
     }
 
@@ -28,6 +30,7 @@ const Home: FC<IHome> = () => {
                 <div className="buttons">
                     <button onClick={() => navigate("/produto")}>Cadastrar nova despesa<MdArrowForwardIos size={35} /></button>
                     <button onClick={() => navigate("/produtos")}>Listar todas as despesas<MdArrowForwardIos size={35} /></button>
+                    <button onClick={() => navigate("/cadastrar-cartao")}>Adicionar novo cartão<MdArrowForwardIos size={35} /></button>
                 </div>
                 <div className="logout">
                     <div>

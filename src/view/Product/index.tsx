@@ -3,6 +3,7 @@ import { MdArrowForwardIos } from "react-icons/md"
 import { Despesa } from "../../shared/utils/types";
 import { useNavigate } from "react-router-dom";
 import { useParams } from 'react-router-dom';
+import { getCardsFromStorage } from "../../shared/utils/cardStorage";
 import Logo from "../../shared/components/Logo";
 import api from "../../shared/api";
 import Input from "../../shared/components/Input";
@@ -23,16 +24,17 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
     const { id: idDespesa, mes, ano } = useParams();
 
     const navigate = useNavigate()
-    const [type, setType] = useState('avulsa')
+    const [type, setType] = useState('')
+    const [cards, setCards] = useState<any[]>([])
 
     const [dataFieldsDespesa, setDataFieldsDespesa] = useState<Despesa>({
         id: new Date().getTime().toString(),
         title: "",
-        mes: new Date().getMonth().toString(),
+        mes: "",
         ano: new Date().getFullYear().toString(),
         parcela_atual: 1,
-        total_parcelas: 1, // Inicializa com 1 parcela
-        tipo_pagamento: optionsTypePayment[0].value, // Inicializa com o primeiro cartão
+        total_parcelas: 1,
+        tipo_pagamento: "",
         valor_parcela: 0,
         valor_total: "",
     })
@@ -67,49 +69,30 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
         return String(value).replace("R$", "").replace(".", "").replace(",", ".").trim()
     }
 
-    const handleSendValue = () => {
+    useEffect(() => {
+        handleGetCards()
         if (!!isEditType) {
-            api.put({
-                property: "despesas",
-                body: {
-                    despesa: {
-                        ...dataFieldsDespesa,
-                        id: idDespesa,
-                        title: dataFieldsDespesa.title || "N/A",
-                        valor_total: handleFormatNumbersToSend(dataFieldsDespesa.valor_total),
-                        valor_parcela: typeof dataFieldsDespesa.total_parcelas === 'number' ? (Number(handleFormatNumbersToSend(dataFieldsDespesa.valor_total)) / dataFieldsDespesa.total_parcelas).toFixed(2) : dataFieldsDespesa.total_parcelas,
-                        total_parcelas: String(dataFieldsDespesa.total_parcelas),
-                        parcela_atual: String(dataFieldsDespesa.parcela_atual),
-                        mes: String(dataFieldsDespesa.mes),
-                        ano: String(dataFieldsDespesa.ano)
-                    }
-                }
-            }).then(() => {
-                navigate('/produtos')
-            })
-        } else {
-            const total_formated = handleFormatNumbersToSend(dataFieldsDespesa.valor_total)
-            const valor_parcela = typeof dataFieldsDespesa.total_parcelas === 'number' ? (Number(total_formated) / dataFieldsDespesa.total_parcelas).toFixed(2) : dataFieldsDespesa.total_parcelas
+            handleGetDespesa()
+        }
+    }, [])
 
-            api.post({
-                property: "despesas",
-                body: {
-                    despesa: {
-                        ...dataFieldsDespesa,
-                        title: dataFieldsDespesa.title || "N/A",
-                        valor_total: total_formated,
-                        valor_parcela: valor_parcela,
-                        total_parcelas: String(dataFieldsDespesa.total_parcelas),
-                        parcela_atual: String(dataFieldsDespesa.parcela_atual),
-                    }
-                }
-            }).then(() => {
-                navigate('/produtos')
-            })
+    const handleGetCards = () => {
+        const storedCards = getCardsFromStorage();
+        if (storedCards.length > 0) {
+            setCards(storedCards);
+        } else {
+            api.get({ property: "cartoes" }).then(({ data }) => {
+                if (data) setCards(data);
+            });
         }
     }
 
-    useEffect(() => {
+    const paymentOptions = [
+        ...optionsTypePayment,
+        ...cards.map(card => ({ name: card.name, value: card.slug }))
+    ]
+
+    const handleGetDespesa = () => {
         if (isEditType && idDespesa) {
             api.get({
                 property: "despesas",
@@ -127,13 +110,57 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                 }
             })
         }
-    }, [isEditType])
+    }
+
+    const handleSendValue = () => {
+        const valor_parcela = handleFormatNumbersToSend(dataFieldsDespesa.valor_total)
+        const valor_total = Number(valor_parcela) * Number(dataFieldsDespesa.total_parcelas)
+        if (!!isEditType) {
+
+            api.put({
+                property: "despesas",
+                body: {
+                    despesa: {
+                        ...dataFieldsDespesa,
+                        id: idDespesa,
+                        title: dataFieldsDespesa.title || "N/A",
+                        valor_total: valor_total,
+                        valor_parcela: valor_parcela,
+                        total_parcelas: String(dataFieldsDespesa.total_parcelas),
+                        parcela_atual: String(dataFieldsDespesa.parcela_atual),
+                        mes: String(dataFieldsDespesa.mes),
+                        ano: String(dataFieldsDespesa.ano)
+                    }
+                }
+            }).then(() => {
+                navigate('/produtos')
+            })
+        } else {
+            api.post({
+                property: "despesas",
+                body: {
+                    despesa: {
+                        ...dataFieldsDespesa,
+                        title: dataFieldsDespesa.title || "N/A",
+                        valor_total: valor_total,
+                        valor_parcela: valor_parcela,
+                        total_parcelas: String(dataFieldsDespesa.total_parcelas),
+                        parcela_atual: String(dataFieldsDespesa.parcela_atual),
+                    }
+                }
+            }).then(() => {
+                navigate('/produtos')
+            })
+        }
+    }
 
     useEffect(() => {
-        if (dataFieldsDespesa.tipo_pagamento === 'fixa') return
+        if (!dataFieldsDespesa.tipo_pagamento || dataFieldsDespesa.total_parcelas === 'fixa') return
 
         const dia_atual = new Date().getDate()
-        const dia_vencimento = optionsTypePayment.find((option) => option.value === dataFieldsDespesa.tipo_pagamento)?.dia_vencimento
+        const paymentList = cards.length > 0 ? cards : optionsTypePayment;
+        const card = paymentList.find((option) => (option.value || option.slug) === dataFieldsDespesa.tipo_pagamento)
+        const dia_vencimento = card?.dia_vencimento || card?.data_vencimento
 
         let formatedMonth: any = dia_vencimento && dia_atual > dia_vencimento ? new Date().getMonth() + 1 : new Date().getMonth()
         let formatedYear: any = new Date().getFullYear()
@@ -180,9 +207,13 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                             </div>
 
                             <div className="container-one">
-                                <Select value={dataFieldsDespesa.tipo_pagamento} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, tipo_pagamento: e.target.value })} placeholder="Tipo pagamento" options={optionsTypePayment} />
+                                <label>Tipo de pagamento</label>
+                                <Select
+                                    onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, tipo_pagamento: e.target.value })}
+                                    options={paymentOptions}
+                                    value={dataFieldsDespesa.tipo_pagamento}
+                                />
                             </div>
-
                             <div className="container-one">
                                 <Select value={String(dataFieldsDespesa.mes)} onChange={(e) => setDataFieldsDespesa({ ...dataFieldsDespesa, mes: e.target.value })} placeholder="Mês Referência" options={months.map((month, index) => ({ name: month.name, value: String(index) }))} />
                             </div>
@@ -207,7 +238,7 @@ const Product: FC<IProduct> = ({ isEditType = null }) => {
                     {!!type && (
                         <div className="container-two" style={{ marginTop: "20px" }}>
                             <Button nameButton="Cancelar" colorOptional="red" onClick={() => navigate("/home")} />
-                            <Button nameButton={!!isEditType ? "Editar" : "Cadastrar"} onClick={handleSendValue} disabled={!dataFieldsDespesa.valor_total || !dataFieldsDespesa.tipo_pagamento} />
+                            <Button nameButton={!!isEditType ? "Editar" : "Cadastrar"} onClick={handleSendValue} disabled={!dataFieldsDespesa.valor_total || !dataFieldsDespesa.tipo_pagamento || !dataFieldsDespesa.mes || !type} />
                         </div>
                     )}
                 </div>

@@ -4,6 +4,7 @@ import { MdArrowForwardIos, MdOutlineKeyboardArrowDown } from "react-icons/md"
 import { months } from "../../shared/utils/statics";
 import { currencyFormatter, handleSetParamsUrl } from "../../shared/utils/helpers";
 import { useNavigate } from "react-router-dom";
+import { getCardsFromStorage } from "../../shared/utils/cardStorage";
 import Logo from "../../shared/components/Logo";
 import api from "../../shared/api";
 import Button from "../../shared/components/Button";
@@ -30,7 +31,8 @@ const Listing: FC<IListing> = () => {
     const [typeDespesa, setTypeDespesa] = useState<string>("")
     const [despesaSelected, setDespesaSelected] = useState<Despesa | null>(null)
     const [showViradaModal, setShowViradaModal] = useState<boolean>(false)
-    const [cardData, setCardData] = useState<{ name: string, dia: number } | null>(null)
+    const [cardData, setCardData] = useState<{ name: string, dia: number, id?: string } | null>(null)
+    const [cards, setCards] = useState<any[]>([])
 
     const handleGetDespesas = async (params: any = {}) => {
         const paramsRequest = params
@@ -61,11 +63,12 @@ const Listing: FC<IListing> = () => {
 
     const handleCalcDespesasByCalc = () => {
         let despesas: any[] = []
+        const paymentList = cards.length > 0 ? cards : optionsTypePayment;
 
-        optionsTypePayment.forEach((item) => {
+        paymentList.forEach((item) => {
             let totalValue = 0
 
-            const despesasByPayment = despesasAvulsas.filter((despesa) => despesa.tipo_pagamento === item.value)
+            const despesasByPayment = despesasAvulsas.filter((despesa) => despesa.tipo_pagamento === (item.value || item.slug))
 
             if (despesasByPayment.length > 0) {
                 despesasByPayment.forEach((despesa) => {
@@ -74,6 +77,7 @@ const Listing: FC<IListing> = () => {
             }
 
             despesas.push({
+                id: item.id || item.value,
                 name: item.name,
                 totalValue: totalValue.toFixed(2)
             })
@@ -116,18 +120,33 @@ const Listing: FC<IListing> = () => {
     }
 
     const handleShowVirada = (name: string) => {
-        const card = optionsTypePayment.find(opt => opt.name === name);
-        if (card && card.dia_vencimento) {
+        const paymentList = cards.length > 0 ? cards : optionsTypePayment;
+        const card = paymentList.find(opt => opt.name === name);
+        if (card && (card.dia_vencimento || card.data_vencimento)) {
             setCardData({
+                id: card.id,
                 name: card.name,
-                dia: card.dia_vencimento + 1
+                dia: (card.dia_vencimento || card.data_vencimento) + 1
             });
             setShowViradaModal(true);
         }
     }
 
+    const handleGetCards = () => {
+        const storedCards = getCardsFromStorage();
+        if (storedCards.length > 0) {
+            setCards(storedCards);
+        } else {
+            // Fallback para API caso o storage esteja vazio (garantia extra)
+            api.get({ property: "cartoes" }).then(({ data }) => {
+                if (data) setCards(data);
+            });
+        }
+    }
+
     useEffect(() => {
         handleGetDespesas(paramsRequest)
+        handleGetCards()
         const url = handleSetParamsUrl(window.location.href, paramsRequest)
         window.history.pushState(null, '', url)
     }, [paramsRequest])
@@ -229,6 +248,7 @@ const Listing: FC<IListing> = () => {
                         {(plus && despesaSelected) ? <Modal despesa={despesaSelected} type={typeDespesa} onClick={() => setPlus(false)} /> : ""}
                         {showViradaModal && cardData && (
                             <ModalVirada
+                                id={cardData.id}
                                 cardName={cardData.name}
                                 diaVirada={cardData.dia}
                                 onClick={() => setShowViradaModal(false)}

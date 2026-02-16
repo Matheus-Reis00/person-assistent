@@ -36,6 +36,28 @@
             flex-direction: column;
             gap: 16px;
 
+            &>.show-password {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: -8px;
+                cursor: pointer;
+
+                &>input {
+                    cursor: pointer;
+                    width: 16px;
+                    height: 16px;
+                    accent-color: var(--accent-color);
+                }
+
+                &>label {
+                    cursor: pointer;
+                    font-size: 14px;
+                    color: var(--text-secondary);
+                    user-select: none;
+                }
+            }
+
             &>.button-acess {
                 width: 100%;
                 margin-top: 24px;
