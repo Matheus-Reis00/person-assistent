@@ -254,6 +254,8 @@
                                         padding: 0;
                                         text-align: center;
                                         text-align-last: center;
+                                        appearance: none;
+                                        -webkit-appearance: none;
                                         cursor: pointer;
 
                                         &:focus {
