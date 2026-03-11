@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom"
 import Access from "../../view/Access"
 import Home from "../../view/Home"
 import Product from "../../view/Product"
@@ -21,6 +21,8 @@ const Router: FC<IRouter> = () => {
             <Route path="/cadastrar-cartao" element={<CardRegistration />} />
             <Route path="/cadastrar-cartao/:id" element={<CardRegistration isEditType={true} />} />
             <Route path="/configuracoes" element={<Settings />} />
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="*" element={<Navigate to="/home" />} />
         </Routes>
     )
 }

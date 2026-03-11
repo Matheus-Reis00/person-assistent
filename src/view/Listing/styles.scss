@@ -235,6 +235,40 @@
                                 text-transform: uppercase;
                                 color: var(--text-secondary);
                                 letter-spacing: 0.5px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+
+                                .container-select {
+                                    width: 100%;
+                                    margin-bottom: 0;
+
+                                    .default-select {
+                                        height: 30px;
+                                        background: transparent;
+                                        border: none;
+                                        font-size: 9px;
+                                        font-weight: 700;
+                                        text-transform: uppercase;
+                                        color: var(--accent-color);
+                                        padding: 0;
+                                        text-align: center;
+                                        cursor: pointer;
+
+                                        &:focus {
+                                            outline: none;
+                                        }
+
+                                        option {
+                                            background: #1e293b;
+                                            color: #fff;
+                                        }
+                                    }
+
+                                    &::after {
+                                        display: none;
+                                    }
+                                }
                             }
                         }
 
@@ -264,7 +298,7 @@
 
                                     &:nth-child(2) {
                                         font-weight: 500;
-                                        justify-content: flex-start;
+                                        justify-content: center;
                                     }
 
                                     &:nth-child(3) {
@@ -297,7 +331,7 @@
                                 /* Espaço para "Parcela" */
                                 &:nth-child(2) {
                                     width: 30%;
-                                    text-align: left;
+                                    text-align: center;
                                 }
 
                                 &:nth-child(3) {

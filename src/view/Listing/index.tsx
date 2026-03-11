@@ -12,6 +12,7 @@ import Modal from "../../shared/components/Modal";
 import ModalVirada from "../../shared/components/ModalVirada";
 import "./styles.scss"
 import { Despesa } from "../../shared/utils/types";
+import Select from "../../shared/components/Select";
 
 interface IListing { }
 const Listing: FC<IListing> = () => {
@@ -32,6 +33,7 @@ const Listing: FC<IListing> = () => {
     const [showViradaModal, setShowViradaModal] = useState<boolean>(false)
     const [cardData, setCardData] = useState<{ name: string, dia: number, id?: string } | null>(null)
     const [cards, setCards] = useState<any[]>([])
+    const [filterCard, setFilterCard] = useState<string>("")
 
     const handleGetDespesas = async (params: any = {}) => {
         const paramsRequest = params
@@ -65,8 +67,9 @@ const Listing: FC<IListing> = () => {
         const paymentList = cards;
 
         paymentList.forEach((item) => {
-            let totalValue = 0
+            if (filterCard && (item.value || item.slug) !== filterCard) return;
 
+            let totalValue = 0
             const despesasByPayment = despesasAvulsas.filter((despesa) => despesa.tipo_pagamento === (item.value || item.slug))
 
             if (despesasByPayment.length > 0) {
@@ -91,17 +94,25 @@ const Listing: FC<IListing> = () => {
         switch (type) {
             case "avulsa":
                 if (despesasAvulsas)
-                    values = despesasAvulsas?.map((despesa => despesa.valor_parcela))
+                    values = despesasAvulsas
+                        ?.filter(d => !filterCard || d.tipo_pagamento === filterCard)
+                        ?.map((despesa => despesa.valor_parcela))
                 break;
             case "fixa":
                 if (despesasFixas)
-                    values = despesasFixas?.map((despesa => despesa.valor_parcela))
+                    values = despesasFixas
+                        ?.filter(d => !filterCard || d.tipo_pagamento === filterCard)
+                        ?.map((despesa => despesa.valor_parcela))
                 break;
             case "total":
                 if (despesasAvulsas)
-                    values = despesasAvulsas?.map((despesa => despesa.valor_parcela))
+                    despesasAvulsas
+                        ?.filter(d => !filterCard || d.tipo_pagamento === filterCard)
+                        ?.forEach((despesa => { values.push(despesa.valor_parcela) }))
                 if (despesasFixas)
-                    despesasFixas?.forEach((despesa => { values.push(despesa.valor_parcela) }))
+                    despesasFixas
+                        ?.filter(d => !filterCard || d.tipo_pagamento === filterCard)
+                        ?.forEach((despesa => { values.push(despesa.valor_parcela) }))
                 break;
         }
 
@@ -222,26 +233,37 @@ const Listing: FC<IListing> = () => {
                                     <span>Parcela</span>
                                     <span>Titulo</span>
                                     <span>Valor</span>
-                                    <span>Cartão</span>
+                                    <span>
+                                        <Select
+                                            value={filterCard}
+                                            onChange={(e) => setFilterCard(e.target.value)}
+                                            placeholder="Todos"
+                                            options={cards.map(card => ({ name: card.name, value: card.slug }))}
+                                        />
+                                    </span>
                                 </div>
                             </div>
                             <div className="table products">
-                                {despesasAvulsas?.map((item, index) => (
-                                    <div key={index} className="product-row" onClick={() => handleSetTypeDespesa("avulsas", item)}>
-                                        <span>{Number(item?.total_parcelas) > 1 ? item?.parcela_atual + "/" : ''}{item?.total_parcelas}</span>
-                                        <span>{item.title}</span>
-                                        <span>{currencyFormatter(item.valor_parcela)}</span>
-                                        <span dangerouslySetInnerHTML={{ __html: cards.find(opt => (opt.value || opt.slug) === item.tipo_pagamento)?.name?.replace(" ", "<br/>") || 'N/A' }}></span>
-                                    </div>
-                                ))}
-                                {despesasFixas?.map((item, index) => (
-                                    <div key={index} className="product-row" onClick={() => handleSetTypeDespesa("fixas", item)}>
-                                        <span>fixa</span>
-                                        <span>{item.title}</span>
-                                        <span>{currencyFormatter(item.valor_parcela)}</span>
-                                        <span dangerouslySetInnerHTML={{ __html: cards.find(opt => (opt.value || opt.slug) === item.tipo_pagamento)?.name?.replace(" ", "<br/>") || 'N/A' }}></span>
-                                    </div>
-                                ))}
+                                {despesasAvulsas
+                                    ?.filter(item => !filterCard || item.tipo_pagamento === filterCard)
+                                    ?.map((item, index) => (
+                                        <div key={index} className="product-row" onClick={() => handleSetTypeDespesa("avulsas", item)}>
+                                            <span>{Number(item?.total_parcelas) > 1 ? item?.parcela_atual + "/" : ''}{item?.total_parcelas}</span>
+                                            <span>{item.title}</span>
+                                            <span>{currencyFormatter(item.valor_parcela)}</span>
+                                            <span dangerouslySetInnerHTML={{ __html: cards.find(opt => (opt.value || opt.slug) === item.tipo_pagamento)?.name?.replace(" ", "<br/>") || 'N/A' }}></span>
+                                        </div>
+                                    ))}
+                                {despesasFixas
+                                    ?.filter(item => !filterCard || item.tipo_pagamento === filterCard)
+                                    ?.map((item, index) => (
+                                        <div key={index} className="product-row" onClick={() => handleSetTypeDespesa("fixas", item)}>
+                                            <span>fixa</span>
+                                            <span>{item.title}</span>
+                                            <span>{currencyFormatter(item.valor_parcela)}</span>
+                                            <span dangerouslySetInnerHTML={{ __html: cards.find(opt => (opt.value || opt.slug) === item.tipo_pagamento)?.name?.replace(" ", "<br/>") || 'N/A' }}></span>
+                                        </div>
+                                    ))}
                             </div>
                         </div>
                         {(plus && despesaSelected) ? <Modal despesa={despesaSelected} type={typeDespesa} onClick={() => setPlus(false)} /> : ""}
