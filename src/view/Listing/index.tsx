@@ -34,6 +34,7 @@ const Listing: FC<IListing> = () => {
     const [cardData, setCardData] = useState<{ name: string, dia: number, id?: string } | null>(null)
     const [cards, setCards] = useState<any[]>([])
     const [filterCard, setFilterCard] = useState<string>("")
+    const [filterType, setFilterType] = useState<string>("")
 
     const handleGetDespesas = async (params: any = {}) => {
         const paramsRequest = params
@@ -66,6 +67,8 @@ const Listing: FC<IListing> = () => {
         let despesas: any[] = []
         const paymentList = cards;
 
+        if (filterType === 'fixa') return despesas;
+
         paymentList.forEach((item) => {
             if (filterCard && (item.value || item.slug) !== filterCard) return;
 
@@ -93,23 +96,23 @@ const Listing: FC<IListing> = () => {
         let values: any[] = []
         switch (type) {
             case "avulsa":
-                if (despesasAvulsas)
+                if (despesasAvulsas && (!filterType || filterType === "avulsa"))
                     values = despesasAvulsas
                         ?.filter(d => !filterCard || d.tipo_pagamento === filterCard)
                         ?.map((despesa => despesa.valor_parcela))
                 break;
             case "fixa":
-                if (despesasFixas)
+                if (despesasFixas && (!filterType || filterType === "fixa"))
                     values = despesasFixas
                         ?.filter(d => !filterCard || d.tipo_pagamento === filterCard)
                         ?.map((despesa => despesa.valor_parcela))
                 break;
             case "total":
-                if (despesasAvulsas)
+                if (despesasAvulsas && (!filterType || filterType === "avulsa"))
                     despesasAvulsas
                         ?.filter(d => !filterCard || d.tipo_pagamento === filterCard)
                         ?.forEach((despesa => { values.push(despesa.valor_parcela) }))
-                if (despesasFixas)
+                if (despesasFixas && (!filterType || filterType === "fixa"))
                     despesasFixas
                         ?.filter(d => !filterCard || d.tipo_pagamento === filterCard)
                         ?.forEach((despesa => { values.push(despesa.valor_parcela) }))
@@ -230,7 +233,17 @@ const Listing: FC<IListing> = () => {
                         <div className="table-products">
                             <div className="table title">
                                 <div>
-                                    <span>Parcela</span>
+                                    <span>
+                                        <Select
+                                            value={filterType}
+                                            onChange={(e) => setFilterType(e.target.value)}
+                                            placeholder="Todos"
+                                            options={[
+                                                { name: "Avulsa", value: "avulsa" },
+                                                { name: "Fixa", value: "fixa" }
+                                            ]}
+                                        />
+                                    </span>
                                     <span>Titulo</span>
                                     <span>Valor</span>
                                     <span>
@@ -244,7 +257,7 @@ const Listing: FC<IListing> = () => {
                                 </div>
                             </div>
                             <div className="table products">
-                                {despesasAvulsas
+                                {(!filterType || filterType === "avulsa") && despesasAvulsas
                                     ?.filter(item => !filterCard || item.tipo_pagamento === filterCard)
                                     ?.map((item, index) => (
                                         <div key={index} className="product-row" onClick={() => handleSetTypeDespesa("avulsas", item)}>
@@ -254,7 +267,7 @@ const Listing: FC<IListing> = () => {
                                             <span dangerouslySetInnerHTML={{ __html: cards.find(opt => (opt.value || opt.slug) === item.tipo_pagamento)?.name?.replace(" ", "<br/>") || 'N/A' }}></span>
                                         </div>
                                     ))}
-                                {despesasFixas
+                                {(!filterType || filterType === "fixa") && despesasFixas
                                     ?.filter(item => !filterCard || item.tipo_pagamento === filterCard)
                                     ?.map((item, index) => (
                                         <div key={index} className="product-row" onClick={() => handleSetTypeDespesa("fixas", item)}>
