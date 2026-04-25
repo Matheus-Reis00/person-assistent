@@ -4,6 +4,7 @@ import { months } from "../../shared/utils/statics";
 import { currencyFormatter } from "../../shared/utils/helpers";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../shared/components/Logo";
+import Button from "../../shared/components/Button";
 import api from "../../shared/api";
 import "./styles.scss";
 
@@ -176,10 +177,13 @@ const DetailedReport: FC<IDetailedReport> = () => {
                         </div>
                     </div>
 
-                    <button className="btn-search" onClick={handleSearch} disabled={loading}>
-                        {loading ? 'Consolidando...' : 'Buscar Valores'}
-                    </button>
-                    
+                    <div className="btn-search-wrapper">
+                        <Button 
+                            nameButton={loading ? 'Consolidando...' : 'Buscar Valores'} 
+                            onClick={handleSearch} 
+                            loading={loading}
+                        />
+                    </div>
                 </div>
 
                 <div className="resultados">
