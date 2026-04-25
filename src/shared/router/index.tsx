@@ -6,6 +6,7 @@ import Product from "../../view/Product"
 import Listing from "../../view/Listing"
 import Settings from "../../view/Settings"
 import CardRegistration from "../../view/CardRegistration"
+import DetailedReport from "../../view/DetailedReport"
 
 interface IRouter { }
 const Router: FC<IRouter> = () => {
@@ -21,6 +22,7 @@ const Router: FC<IRouter> = () => {
             <Route path="/cadastrar-cartao" element={<CardRegistration />} />
             <Route path="/cadastrar-cartao/:id" element={<CardRegistration isEditType={true} />} />
             <Route path="/configuracoes" element={<Settings />} />
+            <Route path="/relatorio-detalhado" element={<DetailedReport />} />
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="*" element={<Navigate to="/home" />} />
         </Routes>

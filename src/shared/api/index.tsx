@@ -19,6 +19,9 @@ class Api {
             case "cartoes":
                 this.apiUrl = `${import.meta.env.VITE_BASE_URL}/cartoes`
                 break;
+            case "relatorio-detalhado":
+                this.apiUrl = `${import.meta.env.VITE_BASE_URL}/despesas/relatorio-detalhado`
+                break;
         }
     }
 

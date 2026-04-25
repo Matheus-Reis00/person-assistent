@@ -12,7 +12,8 @@ export interface IRequestGet extends IRequest {
         }
         login?: string;
         password?: string;
-        "mes-referencia"?: string
+        "mes-referencia"?: string;
+        "mes-referencia-fim"?: string;
     }
 }
 export interface IRequestPost extends IRequest {

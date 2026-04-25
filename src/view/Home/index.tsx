@@ -31,6 +31,7 @@ const Home: FC<IHome> = () => {
                     <button onClick={() => navigate("/produto")}>Cadastrar nova despesa<MdArrowForwardIos size={35} /></button>
                     <button onClick={() => navigate("/produtos")}>Listar todas as despesas<MdArrowForwardIos size={35} /></button>
                     <button onClick={() => navigate("/cadastrar-cartao")}>Adicionar novo cartão<MdArrowForwardIos size={35} /></button>
+                    <button onClick={() => navigate("/relatorio-detalhado")}>Relatório detalhado<MdArrowForwardIos size={35} /></button>
                 </div>
                 <div className="logout">
                     <div>
