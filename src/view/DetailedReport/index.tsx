@@ -1,10 +1,11 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { MdArrowForwardIos, MdClose } from "react-icons/md";
 import { months } from "../../shared/utils/statics";
 import { currencyFormatter } from "../../shared/utils/helpers";
 import { useNavigate } from "react-router-dom";
 import Logo from "../../shared/components/Logo";
 import Button from "../../shared/components/Button";
+import Select from "../../shared/components/Select";
 import api from "../../shared/api";
 import "./styles.scss";
 
@@ -19,10 +20,10 @@ const DetailedReport: FC<IDetailedReport> = () => {
     const navigate = useNavigate();
 
     const [startMes, setStartMes] = useState<string>("");
-    const [startAno, setStartAno] = useState<string>("");
+    const [startAno, setStartAno] = useState<string>(new Date().getFullYear().toString());
 
     const [endMes, setEndMes] = useState<string>("");
-    const [endAno, setEndAno] = useState<string>("");
+    const [endAno, setEndAno] = useState<string>(new Date().getFullYear().toString());
 
     const [loading, setLoading] = useState<boolean>(false);
     const [rawData, setRawData] = useState<any[]>([]);
@@ -126,6 +127,18 @@ const DetailedReport: FC<IDetailedReport> = () => {
 
     const historyData = getHistoryForMethod();
 
+    useEffect(() => {
+        if (modalOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [modalOpen]);
+
     return (
         <div className="container-detailed-report">
             <div className="container">
@@ -143,36 +156,36 @@ const DetailedReport: FC<IDetailedReport> = () => {
                         <div className="col-input">
                             <label>Início</label>
                             <div className="select-group">
-                                <select value={startMes} onChange={e => setStartMes(e.target.value)}>
-                                    <option value="" disabled>Mês</option>
-                                    {months.map(m => (
-                                        <option key={m.value} value={m.value}>{m.name}</option>
-                                    ))}
-                                </select>
-                                <select value={startAno} onChange={e => setStartAno(e.target.value)}>
-                                    <option value="" disabled>Ano</option>
-                                    {anosDisponiveis.map(a => (
-                                        <option key={a} value={a}>{a}</option>
-                                    ))}
-                                </select>
+                                <Select 
+                                    value={startMes} 
+                                    onChange={(e: any) => setStartMes(e.target.value)} 
+                                    placeholder="Mês" 
+                                    options={months.map(m => ({ name: m.name, value: m.value }))}
+                                />
+                                <Select 
+                                    value={startAno} 
+                                    onChange={(e: any) => setStartAno(e.target.value)} 
+                                    placeholder="Ano" 
+                                    options={anosDisponiveis.map(a => ({ name: String(a), value: String(a) }))}
+                                />
                             </div>
                         </div>
 
                         <div className="col-input">
                             <label>Fim</label>
                             <div className="select-group">
-                                <select value={endMes} onChange={e => setEndMes(e.target.value)}>
-                                    <option value="" disabled>Mês</option>
-                                    {months.map(m => (
-                                        <option key={m.value} value={m.value}>{m.name}</option>
-                                    ))}
-                                </select>
-                                <select value={endAno} onChange={e => setEndAno(e.target.value)}>
-                                    <option value="" disabled>Ano</option>
-                                    {anosDisponiveis.map(a => (
-                                        <option key={a} value={a}>{a}</option>
-                                    ))}
-                                </select>
+                                <Select 
+                                    value={endMes} 
+                                    onChange={(e: any) => setEndMes(e.target.value)} 
+                                    placeholder="Mês" 
+                                    options={months.map(m => ({ name: m.name, value: m.value }))}
+                                />
+                                <Select 
+                                    value={endAno} 
+                                    onChange={(e: any) => setEndAno(e.target.value)} 
+                                    placeholder="Ano" 
+                                    options={anosDisponiveis.map(a => ({ name: String(a), value: String(a) }))}
+                                />
                             </div>
                         </div>
                     </div>
@@ -222,56 +235,55 @@ const DetailedReport: FC<IDetailedReport> = () => {
                         </>
                     )}
                 </div>
-                
-                {/* Modal de Detalhes Mensais da Forma de Pagamento */}
-                {modalOpen && (
-                    <div className="modal-overlay" onClick={() => setModalOpen(false)}>
-                        <div className="modal-content" onClick={e => e.stopPropagation()}>
-                            <div className="modal-header">
-                                <h3>{selectedPaymentMethod}</h3>
-                                <button className="btn-close" onClick={() => setModalOpen(false)}>
-                                    <MdClose size={24} />
-                                </button>
-                            </div>
-                            <div className="modal-body">
-                                {historyData.length > 0 ? (
-                                    <table className="table-history">
-                                        <thead>
-                                            <tr>
-                                                <th>Mês/Ano</th>
-                                                <th>Total Pago</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {historyData.map((hist, i) => {
-                                                const [a, m] = hist.mesReferencia.split('-');
-                                                const mesNome = months.find(x => x.value === String(Number(m)))?.name || m;
-                                                return (
-                                                    <tr key={i}>
-                                                        <td>{mesNome}/{a}</td>
-                                                        <td className="valor">{currencyFormatter(hist.total)}</td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
-                                ) : (
-                                    <p className="empty-text">Sem histórico para esta forma de pagamento.</p>
-                                )}
-                            </div>
-                            <div className="modal-footer">
-                                <div className="totalizador">
-                                    <span>Total: </span>
-                                    <span className="valor">
-                                        {currencyFormatter(historyData.reduce((acc, obj) => acc + obj.total, 0))}
-                                    </span>
-                                </div>
+            </div>
+            
+            {/* Modal de Detalhes Mensais da Forma de Pagamento */}
+            {modalOpen && (
+                <div className="modal-overlay" onClick={() => setModalOpen(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>{selectedPaymentMethod}</h3>
+                            <button className="btn-close" onClick={() => setModalOpen(false)}>
+                                <MdClose size={24} />
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            {historyData.length > 0 ? (
+                                <table className="table-history">
+                                    <thead>
+                                        <tr>
+                                            <th>Mês/Ano</th>
+                                            <th>Total Pago</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {historyData.map((hist, i) => {
+                                            const [a, m] = hist.mesReferencia.split('-');
+                                            const mesNome = months.find(x => x.value === String(Number(m)))?.name || m;
+                                            return (
+                                                <tr key={i}>
+                                                    <td>{mesNome}/{a}</td>
+                                                    <td className="valor">{currencyFormatter(hist.total)}</td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <p className="empty-text">Sem histórico para esta forma de pagamento.</p>
+                            )}
+                        </div>
+                        <div className="modal-footer">
+                            <div className="totalizador">
+                                <span>Total: </span>
+                                <span className="valor">
+                                    {currencyFormatter(historyData.reduce((acc, obj) => acc + obj.total, 0))}
+                                </span>
                             </div>
                         </div>
                     </div>
-                )}
-
-            </div>
+                </div>
+            )}
         </div>
     );
 };
